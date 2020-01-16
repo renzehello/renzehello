@@ -16,7 +16,7 @@
     <meta name="description" content="" />
     
     <title>
-          RZ
+      Flink源码分析（一）：源码环境搭建及模块介绍 - RZ
     </title>
     <link rel="manifest" href="/manifest.json" />
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
@@ -26,6 +26,11 @@
   <meta name="generator" content="Hexo 4.2.0"></head>
   <body>
     <canvas id='pagemap'></canvas>
+    
+    <div id="post-toc" class="animated hiddenToc hide">
+      <span class="title">Toc</span>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#环境"><span class="toc-text">环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#下载"><span class="toc-text">下载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编译"><span class="toc-text">编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#项目模块"><span class="toc-text">项目模块</span></a></li></ol>
+    </div>
     
     <div id="fixed-menu-wrap">
       <span class="iconfont icon-sousuo search-box menu-reset"></span>
@@ -56,7 +61,7 @@
       <span class="iconfont icon-close"></span>
       <div class="nav">
         
-        <a href="/" class="current">
+        <a href="/" class="">
           首页
         </a>
         
@@ -110,7 +115,7 @@
 
         <div class="nav">
           
-          <a href="/" class="current">
+          <a href="/" class="">
             首页
           </a>
           
@@ -163,239 +168,160 @@
     </div>
     <div id="container">
       <div class="main animated bounceInRight delay-0.7s">
-        
-<div class="posts">
-  <ul>
-     
-
-    
-
-  <li class="item">
-
+        <article class="post-entry">
+    <div class="header">
       
-
-      
-      <div class="describe">
-        <div class="title">
-          <a href="/2020/01/16/compile-code/">Flink源码分析（一）：源码环境搭建及模块介绍</a>
-        </div>
-        <div class="date">
+      <div class="title">Flink源码分析（一）：源码环境搭建及模块介绍</div>
+      <div class="meta">
+        <span class="item">
           <span class="iconfont icon-time-circle"></span>
-          <span>20/01/16</span>
-        </div>
-        
-        <div class="meta">
-          <div class="l">
-            <div class="warp">
-              
-              <span class="iconfont icon-folder"></span>
-              <span class="desp">
-                 
-                <a href="/categories/Code">Code</a>
-                 
-              </span>
-              
-            </div>
+          <span>2020/01/16</span>
+        </span>
 
-            
-            <div class="warp">
-              <span class="iconfont icon-tag1"></span>
-              <span class="desp">
-                 
-                <a href="/tags/源代码">源代码</a>
+        
+
+         
+        <span class="item">
+          <span class="iconfont icon-folder"></span>
+          <span>
+              
+                
+                  <a href="/categories/Code">Code</a>
+                
+              
+          </span>
+        </span>
+        
+        
+         
+          <span class="item">
+            <span class="iconfont icon-tag1"></span>
+            <span>
+                
                   
-                <a href="/tags/flink">flink</a>
-                 
-              </span>
+                    <a href="/tags/源代码">源代码</a>
+                  
+                
+                  
+                    <a href="/tags/flink">flink</a>
+                  
+                
+            </span>
+          </span>
+         
+      </div>
+      <div>
+      </div>
+    </div>
+    <html><head></head><body><p>更新至Flink release-1.9.0版本</p>
+<h2 id="环境">环境<a class="post-anchor" href="#环境"></a></h2><ul>
+<li>Java 1.8.0_191</li>
+<li>Apache Maven 3.6.1</li>
+<li>IntelliJ IDEA 2019.2.1</li>
+</ul>
+<h2 id="下载">下载<a class="post-anchor" href="#下载"></a></h2><p>访问<a href="https://github.com/apache/flink" target="_blank" rel="noopener">Apache Flink Github</a></p>
+<ul>
+<li><p>fork 代码到自己github</p>
+</li>
+<li><p>克隆代码</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/apache/flink.git</span><br></pre></td></tr></tbody></table></figure>
+</li>
+<li><p>切换至 release-1.9 分支：</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout release-1.9</span><br></pre></td></tr></tbody></table></figure>
+
+</li>
+</ul>
+<h2 id="编译">编译<a class="post-anchor" href="#编译"></a></h2><ul>
+<li>修改maven setting文件<figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag"><<span class="name">mirrors</span>></span></span><br><span class="line">        <span class="tag"><<span class="name">mirror</span>></span></span><br><span class="line">  <span class="tag"><<span class="name">id</span>></span>nexus-aliyun<span class="tag"></<span class="name">id</span>></span></span><br><span class="line">  <span class="tag"><<span class="name">mirrorOf</span>></span>*,!jeecg,!jeecg-snapshots,!mapr-releases<span class="tag"></<span class="name">mirrorOf</span>></span></span><br><span class="line">  <span class="tag"><<span class="name">name</span>></span>Nexus aliyun<span class="tag"></<span class="name">name</span>></span></span><br><span class="line">  <span class="tag"><<span class="name">url</span>></span>http://maven.aliyun.com/nexus/content/groups/public<span class="tag"></<span class="name">url</span>></span></span><br><span class="line"><span class="tag"></<span class="name">mirror</span>></span></span><br></pre></td></tr></tbody></table></figure></li>
+<li>编译<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package -DskipTests</span><br></pre></td></tr></tbody></table></figure>
+
+</li>
+</ul>
+<h2 id="项目模块">项目模块<a class="post-anchor" href="#项目模块"></a></h2><p>Flink release-1.9 分支，Flink 主要模块：</p>
+<ul>
+<li>flink-annotations 注解；</li>
+<li>flink-clients 客户端；</li>
+<li>flink-connectors Flink 连接器，包括 Kafka、ElasticSearch、Cassandra、HBase、HDFS、Hive、JDBC 等；</li>
+<li>flink-container 提供对 Docker 和 Flink on Kubernetes 支持；</li>
+<li>flink-contrib 新模块准备或孵化区域；</li>
+<li><strong>flink-core</strong> Flink 核心代码；</li>
+<li>flink-dist 提供对分发包支持；</li>
+<li>flink-filesystems 提供对文件系统的支持，包括 HDFS、S3 等；</li>
+<li>flink-formats 提供对文件格式的支持，包括 Avro、Parquet、JSON、CSV 等；</li>
+<li><strong>flink-java</strong> Flink 底层 API；</li>
+<li>flink-libraries 提供对事件处理（Flink CEP）、图处理（Flink Gelly）和状态处理的支持；</li>
+<li>flink-mesos 提供对 Flink on Mesos 支持；</li>
+<li>flink-metrics 提供对监控的支持，包括 Graphite、InfluxDB、Prometheus、JMX、SLF4j 等；</li>
+<li>flink-ml-parent 提供对机器学习的支持；</li>
+<li><strong>flink-optimizer</strong> Flink 优化器；</li>
+<li>flink-python 提供对 Python 的支持；</li>
+<li>flink-queryable-state 提供对 Queryable State 支持；</li>
+<li>flink-quickstart 提供对 Java 和 Scala 工程模板的支持；</li>
+<li><strong>flink-runtime</strong> Flink 运行时；</li>
+<li>flink-runtime-web Dashboard UI；</li>
+<li>flink-scala 提供对 Scala 的支持；</li>
+<li>flink-scala-shell 提供对 Scala Shell 的支持；</li>
+<li>flink-shaded-curator 提供 Apache Curator 依赖的 shaded 包；</li>
+<li>flink-state-backends 提供对 RocksDB 状态后端的支持；</li>
+<li><strong>flink-streaming-java</strong> DataStream API；</li>
+<li>flink-streaming-scala DataStream API 的 Scala 版；</li>
+<li><strong>flink-table</strong> Table API 和 SQL；</li>
+<li>flink-yarn 提供对 Flink on YARN 支持。</li>
+</ul>
+<p>以上模块中，粗体为重点模块，将在之后 Flink 源码分析的博文中详细介绍。</p>
+</body></html>
+
+  
+    <div class="post-reward">
+    <div id="reward-button">打赏</div>
+      <div id="qr">
+        <div class="wrap">
+            
+            <div class="bg-wrap">
+              <a href="/images/zhifubao.png" target="_block" class="bg" style="background-image:url('/images/zhifubao.png')"></a>
+              支付宝
             </div>
             
-            <div class="warp">
-              <div class="share" data-url="/2020/01/16/compile-code/">
-                <span class="iconfont icon-share"></span>
-              </div>
-              <div class="desp share" data-url="/2020/01/16/compile-code/">
-                <a href="#">分享</a>
-              </div>
+            
+            <div class="bg-wrap">
+                <a href="/images/weixin.png" target="_block" class="bg" style="background-image:url('/images/weixin.png')"></a>
+              微信
             </div>
-          </div>
-          <div class="r">
-            <a href="/2020/01/16/compile-code/">Read More</a>
-          </div>
+            
         </div>
       </div>
-    </li>
-     
-
-    
-
-  <li class="item">
-
-      
-
-      
-      <div class="describe">
-        <div class="title">
+    </div>
+  
+  <div class="post-guide">
+    <div class="item left">
+        
+    </div>
+    <div class="item right">
+        
           <a href="/2020/01/16/how-read-code/">如何高效的阅读源代码</a>
-        </div>
-        <div class="date">
-          <span class="iconfont icon-time-circle"></span>
-          <span>20/01/16</span>
-        </div>
         
-        <div class="meta">
-          <div class="l">
-            <div class="warp">
-              
-              <span class="iconfont icon-folder"></span>
-              <span class="desp">
-                 
-                <a href="/categories/Usage">Usage</a>
-                 
-              </span>
-              
-            </div>
+    </div>
+  </div>
 
-            
-            <div class="warp">
-              <span class="iconfont icon-tag1"></span>
-              <span class="desp">
-                 
-                <a href="/tags/源代码">源代码</a>
-                 
-              </span>
-            </div>
-            
-            <div class="warp">
-              <div class="share" data-url="/2020/01/16/how-read-code/">
-                <span class="iconfont icon-share"></span>
-              </div>
-              <div class="desp share" data-url="/2020/01/16/how-read-code/">
-                <a href="#">分享</a>
-              </div>
-            </div>
-          </div>
-          <div class="r">
-            <a href="/2020/01/16/how-read-code/">Read More</a>
-          </div>
-        </div>
-      </div>
-    </li>
-     
+  
 
-    
+  <div class="post-copyright">
+    <div class="auth">
+      本文作者：<a href="http://renzehello.github.io">黑泽暗</a>
+    </div>
+    <div class="link">
+      永久链接：<a href="http://renzehello.github.io/2020/01/16/compile-code/">http://renzehello.github.io/2020/01/16/compile-code/</a>
+    </div>
+    <div class="declare">
+      版权声明：本文首发于<a href="http://renzehello.github.io">黑泽暗</a>的博客，转载请注明出处！
+    </div>
+  </div>
 
-  <li class="item">
+  <div id="comment"></div>
 
-      
-
-      
-      <div class="describe">
-        <div class="title">
-          <a href="/2020/01/13/page/">page</a>
-        </div>
-        <div class="date">
-          <span class="iconfont icon-time-circle"></span>
-          <span>20/01/13</span>
-        </div>
-        
-        <div class="meta">
-          <div class="l">
-            <div class="warp">
-              
-              <span class="iconfont icon-folder"></span>
-              <span class="desp">
-                
-              </span>
-              
-            </div>
-
-            
-            <div class="warp">
-              <span class="iconfont icon-tag1"></span>
-              <span class="desp">
-                
-              </span>
-            </div>
-            
-            <div class="warp">
-              <div class="share" data-url="/2020/01/13/page/">
-                <span class="iconfont icon-share"></span>
-              </div>
-              <div class="desp share" data-url="/2020/01/13/page/">
-                <a href="#">分享</a>
-              </div>
-            </div>
-          </div>
-          <div class="r">
-            <a href="/2020/01/13/page/">Read More</a>
-          </div>
-        </div>
-      </div>
-    </li>
-     
-
-    
-
-  <li class="item">
-
-      
-
-      
-      <div class="describe">
-        <div class="title">
-          <a href="/2020/01/13/post/">post</a>
-        </div>
-        <div class="date">
-          <span class="iconfont icon-time-circle"></span>
-          <span>20/01/13</span>
-        </div>
-        
-        <div class="meta">
-          <div class="l">
-            <div class="warp">
-              
-              <span class="iconfont icon-folder"></span>
-              <span class="desp">
-                 
-                <a href="/categories/testCategories">testCategories</a>
-                 
-              </span>
-              
-            </div>
-
-            
-            <div class="warp">
-              <span class="iconfont icon-tag1"></span>
-              <span class="desp">
-                 
-                <a href="/tags/testTag">testTag</a>
-                 
-              </span>
-            </div>
-            
-            <div class="warp">
-              <div class="share" data-url="/2020/01/13/post/">
-                <span class="iconfont icon-share"></span>
-              </div>
-              <div class="desp share" data-url="/2020/01/13/post/">
-                <a href="#">分享</a>
-              </div>
-            </div>
-          </div>
-          <div class="r">
-            <a href="/2020/01/13/post/">Read More</a>
-          </div>
-        </div>
-      </div>
-    </li>
-    
-  </ul>
-</div>
-
-<div class="paginator">
-  <span class="page-number current">1</span>
-</div>
-
+  
+  
+</article>
         <footer>
           <div class="copyright">
             ©2020
