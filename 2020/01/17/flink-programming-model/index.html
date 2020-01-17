@@ -29,7 +29,7 @@
     
     <div id="post-toc" class="animated hiddenToc hide">
       <span class="title">Toc</span>
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#抽象级别"><span class="toc-text">抽象级别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#程序和数据流"><span class="toc-text">程序和数据流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#并行数据流"><span class="toc-text">并行数据流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#窗口（Windows）"><span class="toc-text">窗口（Windows）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#时间（Time）"><span class="toc-text">时间（Time）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有状态操作（Stateful-Operations）"><span class="toc-text">有状态操作（Stateful Operations）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#容错：Checkpoints（Checkpoints-for-Fault-Tolerance）"><span class="toc-text">容错：Checkpoints（Checkpoints for Fault Tolerance）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#批量流（Batch-Streaming）"><span class="toc-text">批量流（Batch Streaming）</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#抽象级别"><span class="toc-text">抽象级别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#程序和数据流"><span class="toc-text">程序和数据流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#并行数据流"><span class="toc-text">并行数据流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#窗口（Windows）"><span class="toc-text">窗口（Windows）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#时间（Time）"><span class="toc-text">时间（Time）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有状态操作（Stateful-Operations）"><span class="toc-text">有状态操作（Stateful Operations）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#容错-Checkpoints"><span class="toc-text">容错-Checkpoints</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#批量流（Batch-Streaming）"><span class="toc-text">批量流（Batch Streaming）</span></a></li></ol>
     </div>
     
     <div id="fixed-menu-wrap">
@@ -210,7 +210,8 @@
       </div>
     </div>
     <html><head></head><body><h2 id="抽象级别">抽象级别<a class="post-anchor" href="#抽象级别"></a></h2><p>Flink提供了不同的抽象级别来开发流/批处理程序。</p>
-<p><a href="levels_of_abstraction.svg" data-caption="levels_of_abstraction" data-fancybox="images"><img src="levels_of_abstraction.svg" alt="levels_of_abstraction"></a></p>
+<a href="/2020/01/17/flink-programming-model/levels_of_abstraction.svg" data-caption="levels_of_abstraction" data-fancybox="images"><img src="/2020/01/17/flink-programming-model/levels_of_abstraction.svg" alt="levels_of_abstraction"></a>
+
 <ul>
 <li>最低级别抽象只提供有状态流（stateful streaming）。它将<em>Process Function</em>嵌入到<strong>DataStream API</strong>中。它允许用户自由处理来自一个或多个流的事件，并使用<strong><em>一致的容错状态</em></strong>。此外，用户可以注册事件时间和处理时间回调，允许程序实现复杂的计算。</li>
 <li>实际上，一般应用并不需要stateful streaming这么底层的抽象，而是采用Core Apis即可，例如DataStrean API（有界/无界的流）和DataSet API（有界的数据集）。这些常用的APIs提供了常见的数据处理构建块（building blocks for data processing），比如用户指定的各种形式的转换、连接、聚合、窗口、状态等。在这些api中处理的数据类型用各自的编程语言表示为类。</li>
@@ -218,18 +219,22 @@
 <li>Flink提供的最高级抽象是SQL。这种抽象在语义和表达性上都类似于Table API，但将程序表示为SQL查询表达式。SQL抽象与Table API紧密交互，SQL查询可以在Table API中定义的表上执行。</li>
 </ul>
 <p><strong><em>这里的接口抽象和spark很像，过后可以在没种抽象下加一段示例代码</em></strong></p>
-<h2 id="程序和数据流">程序和数据流<a class="post-anchor" href="#程序和数据流"></a></h2><p><a href="./flink-programming-model/program_dataflow.svg" data-caption="program_dataflow" data-fancybox="images"><img src="./flink-programming-model/program_dataflow.svg" alt="program_dataflow"></a></p>
+<h2 id="程序和数据流">程序和数据流<a class="post-anchor" href="#程序和数据流"></a></h2><a href="/2020/01/17/flink-programming-model/program_dataflow.svg" data-caption="program_dataflow" data-fancybox="images"><img src="/2020/01/17/flink-programming-model/program_dataflow.svg" alt="program_dataflow"></a>
+
 <p><strong>结果上图来看，Flink程序可以视为一个有向无环图，图的起点是data source，节点是各种transfermation operator，边就是streaming，终点是data sink。</strong><br>流（streams）和转换（transformations）是构成Flink程序的基本构建块（The basic building blocks，基本组成）。需要注意的是，Flink的DataSet API也是基于流实现的——稍后会详细介绍。从概念上讲，流是一种（可能永远不会结束）流动的数据记录，而转换是一种操作，它接收一个或者多个流作为输入，并且生产出一个或多个输出流作为结果。<br>当执行时，Flink程序被影射到流式数据流（streaming dataflows），由流和转换操作组成。每个数据流开始于一个或多个数据源（sources），并结束于一个或多个接收器（sinks）。数据流类似于任意有向无环图（directed acyclic graphs DAGs）。</p>
-<h2 id="并行数据流">并行数据流<a class="post-anchor" href="#并行数据流"></a></h2><p><a href="./flink-programming-model/parallel_dataflow.svg" data-caption="parallel_dataflow" data-fancybox="images"><img src="./flink-programming-model/parallel_dataflow.svg" alt="parallel_dataflow"></a></p>
+<h2 id="并行数据流">并行数据流<a class="post-anchor" href="#并行数据流"></a></h2><a href="/2020/01/17/flink-programming-model/parallel_dataflow.svg" data-caption="parallel_dataflow" data-fancybox="images"><img src="/2020/01/17/flink-programming-model/parallel_dataflow.svg" alt="parallel_dataflow"></a>
+
 <p><strong>从并行和分布式的视角看Flink程序的话，流–>流分区；转换操作–>操作子任务</strong><br>抽象视角 | 并行视角 |  分类|<br>-|-|-<br>stream | stream partitions | - |<br>transfermation operator | operator subtasks | one to one / redistribution |</p>
 <p>Flink程序是并行和分布式的。在执行期间，一个流有一个或多个流分区（stream partitions），每个操作符有一个或多个操作子任务（operator subtasks）。operator subtasks彼此独立，并在不同的线程中执行，甚至在不同的机器或容器上执行。<br>operator subtasks的数量为该特定操作（operator）的并行度（parallelism）。 流的并行度总是取决于它的生产操作。同一程序的不同操作可能具有不同级别的并行度。<br>流可以在两个操作符之间以一对一 one to one（或转发 forwarding）模式传输数据，也可以采用重分布<strong>* Redistributing*</strong> 模式：</p>
 <ul>
 <li>one to one，如上图的source和map操作，保持数据元素的分区和<strong><em>顺序</em></strong>。</li>
 <li>redistrubition，重分布。如上图中的 map() 和 keyBy/window，以及 keyBy/window 和 Sink，会改变流的分区。每个操作子任务根据具体的transfermation operator向不同的目标子任务发送数据。例如keyBy()(通过散列键重新分区)、broadcast()或rebalance()(随机重新分区)。在重分发交换中，关于不同键的聚合结果到达接收器的顺序是不确定的。</li>
 </ul>
-<h2 id="窗口（Windows）">窗口（Windows）<a class="post-anchor" href="#窗口（Windows）"></a></h2><p><a href="./flink-programming-model/windows.svg" data-caption="windows" data-fancybox="images"><img src="./flink-programming-model/windows.svg" alt="windows"></a></p>
+<h2 id="窗口（Windows）">窗口（Windows）<a class="post-anchor" href="#窗口（Windows）"></a></h2><a href="/2020/01/17/flink-programming-model/windows.svg" data-caption="windows" data-fancybox="images"><img src="/2020/01/17/flink-programming-model/windows.svg" alt="windows"></a>
+
 <p>窗口（Windows）概念是用于在流计算过程中划分聚合计算对应的事件范围，例如“count over the last 5 minutes”或者“sum of the last 100 elements”。<br>窗口可以是时间驱动的（例如:每30秒），也可以是数据驱动的（例如:每100个元素）。窗口可以分为以下三类：翻滚窗口 tumbling windows（没有重叠）、滑动窗口 sliding windows（有重叠）和会话窗口 session windows（中间有一个不活动的间隙）。</p>
-<h2 id="时间（Time）">时间（Time）<a class="post-anchor" href="#时间（Time）"></a></h2><p><a href="./flink-programming-model/event_ingestion_processing_time.svg" data-caption="event_ingestion_processing_time" data-fancybox="images"><img src="./flink-programming-model/event_ingestion_processing_time.svg" alt="event_ingestion_processing_time"></a></p>
+<h2 id="时间（Time）">时间（Time）<a class="post-anchor" href="#时间（Time）"></a></h2><a href="/2020/01/17/flink-programming-model/event_ingestion_processing_time.svg" data-caption="event_ingestion_processing_time" data-fancybox="images"><img src="/2020/01/17/flink-programming-model/event_ingestion_processing_time.svg" alt="event_ingestion_processing_time"></a>
+
 <p>在流处理程序中提到时间（例如定义 windows）时，可以指不同的时间概念：</p>
 <ul>
 <li>事件时间（Event Time） 是创建事件的时间。它通常由事件中的时间戳描述，例如由生产传感器或生产服务附加的时间戳。Flink通过时间戳分配程序timestamp assigners访问事件时间戳。</li>
@@ -243,8 +248,9 @@
 <li>用户想按照分钟，小时、天进行聚合计算，求取当前的最大值、均值等聚会指标，这就需要利用状态来维护当前计算过程中产生的结果，例如事件的总数，总和以及最大，最小值。</li>
 </ul>
 <p><strong>具体内容后面会开一篇文章细讲</strong></p>
-<p><a href="/flink-programming-model/state_partitioning.svg" data-caption="state_partitioning" data-fancybox="images"><img src="/flink-programming-model/state_partitioning.svg" alt="state_partitioning"></a></p>
-<h2 id="容错：Checkpoints（Checkpoints-for-Fault-Tolerance）">容错：Checkpoints（Checkpoints for Fault Tolerance）<a class="post-anchor" href="#容错：Checkpoints（Checkpoints-for-Fault-Tolerance）"></a></h2><p>Flink使用流重放和检查点的组合实现容错。检查点与每个输入流中的特定点以及每个操作符的对应状态相关。通过恢复运算符的状态并从检查点重放事件，可以从检查点恢复流数据流，同时保持一致性（恰好一次处理语义）。</p>
+<a href="/2020/01/17/flink-programming-model/state_partitioning.svg" data-caption="state_partitioning" data-fancybox="images"><img src="/2020/01/17/flink-programming-model/state_partitioning.svg" alt="state_partitioning"></a>
+
+<h2 id="容错-Checkpoints">容错-Checkpoints<a class="post-anchor" href="#容错-Checkpoints"></a></h2><p>Flink使用流重放和检查点的组合实现容错。检查点与每个输入流中的特定点以及每个操作符的对应状态相关。通过恢复运算符的状态并从检查点重放事件，可以从检查点恢复流数据流，同时保持一致性（恰好一次处理语义）。</p>
 <p>检查点间隔是在执行期间用恢复时间（需要重放的事件的数量）来折衷容错开销的手段。</p>
 <h2 id="批量流（Batch-Streaming）">批量流（Batch Streaming）<a class="post-anchor" href="#批量流（Batch-Streaming）"></a></h2><p>Flink执行批处理程序作为流程序的特殊情况，其中流是有界的（有限数量的元素）。 DataSet在内部被视为数据流。因此，上述概念以相同的方式应用于批处理程序，并且它们适用于流程序，除了少数例外：</p>
 <p>批处理程序的容错不使用检查点。通过完全重放流来进行恢复。这是可能的，因为输入有限。这会使成本更多地用于恢复，但使常规处理更便宜，因为它避免了检查点。</p>
