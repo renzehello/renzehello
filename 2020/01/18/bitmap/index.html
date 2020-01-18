@@ -27,6 +27,11 @@
   <body>
     <canvas id='pagemap'></canvas>
     
+    <div id="post-toc" class="animated hiddenToc hide">
+      <span class="title">Toc</span>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#导读"><span class="toc-text">导读</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#参考文献"><span class="toc-text">参考文献</span></a></li></ol></li></ol>
+    </div>
+    
     <div id="fixed-menu-wrap">
       <span class="iconfont icon-sousuo search-box menu-reset"></span>
       <span class="icon-toc menu-reset">Toc</span>
@@ -180,6 +185,17 @@
           </span>
         
 
+         
+        <span class="item">
+          <span class="iconfont icon-folder"></span>
+          <span>
+              
+                
+                  <a href="/categories/data structure">data structure</a>
+                
+              
+          </span>
+        </span>
         
         
          
@@ -188,7 +204,7 @@
             <span>
                 
                   
-                    <a href="/tags/bitmap, data structure">bitmap, data structure</a>
+                    <a href="/tags/bitmap">bitmap</a>
                   
                 
             </span>
@@ -198,12 +214,17 @@
       <div>
       </div>
     </div>
-    <html><head></head><body><div class="row">
+    <html><head></head><body><h2 id="导读">导读<a class="post-anchor" href="#导读"></a></h2><p>本文将以 Bitmap 在 TD 内部的使用场景为切入点，较为深入地探讨不同类型 BitMap 算法的存储结构和基本操作，同时会对不同 Bitmap 的优缺点进行简单介绍。希望通过对 Bitmap 的学习，帮助大家在使用bitmap 进行海量数据处理的时候，能够知其然更知其所以然。</p>
+
+
+	<div class="row">
     <embed src="./Bitmap详解.pdf" width="100%" height="550" type="application/pdf">
 	</div>
 
 
 
+
+<h3 id="参考文献">参考文献<a class="post-anchor" href="#参考文献"></a></h3><p>[1] D.Lemire, O. Kaser, K. Aouiche, Sorting improves word-aligned bitmap indexes, Sorting improves word-aligned bitmap indexes.<br>[2] S. Chambi, D. Lemire, O. Kaser, R. Godin, Better bitmap performance with Roaring bitmaps , Natural Sciences and Engineering Research Council of Canada.<br>[3] D. Lemire, G. Ssi-Yan-Kai, O. Kaser, Consistently faster and smaller compressed bitmaps with Roaring, Natural Sciences and Engineering Research Council of Canada.<br>[4] Jianguo Wang, Chunbin Lin, Yannis Papakonstantinou, Steven Swanson, An Experimental Study of Bitmap Compression vs. Inverted List Compression, SIGMOD ’17.<br>[5] D. Lemire, O. Kaser, K. Aouiche, Sorting improves word-aligned bitmap indexes, Data & Knowledge Engineering.</p>
 </body></html>
 
   
