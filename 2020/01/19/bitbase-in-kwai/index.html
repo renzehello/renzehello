@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <script>
+  var _hmt = _hmt || []
+  ;(function() {
+    var hm = document.createElement('script')
+    hm.src = 'https://hm.baidu.com/hm.js?5a0acc897fd96474a2c8f4deac84611a'
+    var s = document.getElementsByTagName('script')[0]
+    s.parentNode.insertBefore(hm, s)
+  })()
+</script> 
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    
+    <title>
+      BitBase在用户数据分析中的应用与实践 - RZ
+    </title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+    
+<link rel="stylesheet" href="/style/style.css">
+
+  <meta name="generator" content="Hexo 4.2.0"></head>
+  <body>
+    <canvas id='pagemap'></canvas>
+    
+    <div id="post-toc" class="animated hiddenToc hide">
+      <span class="title">Toc</span>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务需求与挑战"><span class="toc-text">业务需求与挑战</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-业务需求"><span class="toc-text">1. 业务需求</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-技术选型"><span class="toc-text">2. 技术选型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BitBase-解决方案"><span class="toc-text">BitBase 解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-数据模型"><span class="toc-text">1. 数据模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-BitBase架构"><span class="toc-text">2. BitBase架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-存储模块"><span class="toc-text">3. 存储模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-计算模块"><span class="toc-text">4. 计算模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-DeviceId问题"><span class="toc-text">5. DeviceId问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-DeviceId方案"><span class="toc-text">6. DeviceId方案</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#连续、一致、支持反解："><span class="toc-text">连续、一致、支持反解：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#快速转化："><span class="toc-text">快速转化：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务效果"><span class="toc-text">业务效果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-时间延迟"><span class="toc-text">1. 时间延迟</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-服务现状"><span class="toc-text">2. 服务现状</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#未来规划"><span class="toc-text">未来规划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#内部使用经验"><span class="toc-text">内部使用经验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#个人疑问"><span class="toc-text">个人疑问</span></a></li></ol>
+    </div>
+    
+    <div id="fixed-menu-wrap">
+      <span class="iconfont icon-sousuo search-box menu-reset"></span>
+      <span class="icon-toc menu-reset">Toc</span>
+      <span class="iconfont icon-arrowup menu-reset"></span>
+    </div>
+    <div id="fixed-menu">
+      <span class="iconfont icon-menu-"></span>
+    </div>
+    <div id="progress">
+      <div class="line"></div>
+    </div>
+    <div id="search-shade" class="animated hiddenSearch hide">
+      <div class="input-wrap">
+        <span class="iconfont icon-sousuo search-box"></span>
+        <input type="text" placeholder="Search" />
+        <span class="iconfont icon-close"></span>
+      </div>
+      <div class="search-result">
+        <div class="meta">
+          <span><b id="result-count">0</b> results found</span>
+          <img src="/images/logo.jpeg" />
+        </div>
+        <ul id="result-box"></ul>
+      </div>
+    </div>
+    <div id="menu-mask" class="animated hideMenuMask hide">
+      <span class="iconfont icon-close"></span>
+      <div class="nav">
+        
+        <a href="/" class="">
+          首页
+        </a>
+        
+        <a href="/archives" class="">
+          归档
+        </a>
+        
+        <a href="/categories" class="">
+          分类
+        </a>
+        
+        <a href="/tags" class="">
+          标签
+        </a>
+        
+        <a href="/friends" class="">
+          友链
+        </a>
+        
+        <a href="/about" class="">
+          关于
+        </a>
+        
+      </div>
+    </div>
+    <div id="header">
+      <div class="intro">
+        <a href="/" class="logo" style="background-image: url('/images/logo.jpeg')"></a>
+        <div class="author">黑泽暗</div>
+      </div>
+      <div class="nav">
+        <span class="iconfont icon-menu menu-icon"></span>
+        <a href="#" class="search-box">
+          <span class="iconfont icon-sousuo"></span>
+        </a>
+      </div>
+    </div>
+    <div id="side" class="animated bounceInLeft">
+      <div class="shrink">
+        <a href="/" class="logo" style="background-image: url('/images/logo.jpeg')"></a>
+        <span class="iconfont icon-menu toggle-icon"></span>
+        <a href="#" class="search-box">
+          <span class="iconfont icon-sousuo"></span>
+        </a>
+      </div>
+      <div class="magnify">
+        <div class="about">
+          <div class="author">黑泽暗</div>
+          <a href="/" class="logo" style="background-image: url('/images/logo.jpeg')"></a>
+        </div>
+
+        <div class="nav">
+          
+          <a href="/" class="">
+            首页
+          </a>
+          
+          <a href="/archives" class="">
+            归档
+          </a>
+          
+          <a href="/categories" class="">
+            分类
+          </a>
+          
+          <a href="/tags" class="">
+            标签
+          </a>
+          
+          <a href="/friends" class="">
+            友链
+          </a>
+          
+          <a href="/about" class="">
+            关于
+          </a>
+          
+          <a href="#" class="search-box">
+            <span class="iconfont icon-sousuo"></span>
+          </a>
+        </div>
+        <div class="bottom">
+          <div class="follow">
+            
+            <a href="https://github.com/renzehello" target="_block">
+              <span class="iconfont icon-github"></span>
+            </a>
+            
+            <a href="https://github.com/renzehello" target="_block">
+              <span class="iconfont icon-facebook"></span>
+            </a>
+            
+            <a href="https://github.com/renzehello" target="_block">
+              <span class="iconfont icon-instagram"></span>
+            </a>
+             
+            <a href="/atom.xml" target="_block">
+              <span class="iconfont icon-rss"></span>
+            </a>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="container">
+      <div class="main animated bounceInRight delay-0.7s">
+        <article class="post-entry">
+    <div class="header">
+      
+      <div class="title">BitBase在用户数据分析中的应用与实践</div>
+      <div class="meta">
+        <span class="item">
+          <span class="iconfont icon-time-circle"></span>
+          <span>2020/01/19</span>
+        </span>
+
+        
+          <span class="item leancloud-visitors" id="/2020/01/19/bitbase-in-kwai/" data-flag-title="BitBase在用户数据分析中的应用与实践">
+            <span class="iconfont icon-eye1"></span>
+            <span class="leancloud-visitors-count"></span>
+          </span>
+        
+
+         
+        <span class="item">
+          <span class="iconfont icon-folder"></span>
+          <span>
+              
+                
+                  <a href="/categories/Architecture">Architecture</a>
+                
+              
+          </span>
+        </span>
+        
+        
+         
+          <span class="item">
+            <span class="iconfont icon-tag1"></span>
+            <span>
+                
+                  
+                    <a href="/tags/Bitmap">Bitmap</a>
+                  
+                
+                  
+                    <a href="/tags/Architecture">Architecture</a>
+                  
+                
+            </span>
+          </span>
+         
+      </div>
+      <div>
+      </div>
+    </div>
+    <html><head></head><body><p>本文内容来自 数据平台部数据架构组@陈杨 在 BigData NoSQL 12th MeetUp 中的演讲内容。</p>
+<p>在快手 HBase 建设的近两年时间中，积累了比较丰富的应用场景：如短视频的存储、IM、直播里评论 feed 流等场景。本次介绍其中的一个场景：Bitbase在用户数据分析中的应用与实践。内容包括业务需求、解决方案、业务效果、未来规划和内部使用经验。</p>
+<h2 id="概要">概要<a class="post-anchor" href="#概要"></a></h2><ul>
+<li>业务需求及挑战：BitBase 引擎的初衷是什么；</li>
+<li>BitBase 解决方案：在 HBase 基础上，BitBase 的架构；</li>
+<li>业务效果：在快手的实际应用场景中，效果如何；</li>
+<li>未来规划：中短期的规划；</li>
+<li>内部使用经验：快手内部的实际使用经验。</li>
+</ul>
+<h2 id="业务需求与挑战">业务需求与挑战<a class="post-anchor" href="#业务需求与挑战"></a></h2><h3 id="1-业务需求">1. 业务需求<a class="post-anchor" href="#1-业务需求"></a></h3><a href="/2020/01/19/bitbase-in-kwai/%E4%B8%9A%E5%8A%A1%E9%9C%80%E6%B1%82.png" data-caption="业务需求" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/%E4%B8%9A%E5%8A%A1%E9%9C%80%E6%B1%82.png" alt="业务需求"></a>
+
+<p>对于一种技术的应用，首先需要明确其解决的业务需求。本文阐述的技术相应的需求场景用一句话总结：<strong>在千亿级日志中，选择任意维度，秒级计算出设备7-90日留存</strong>。</p>
+<p>如上图所示。左边是原始数据，可能跨90天，每一天的数据可以看作是一张 Hive 宽表，在逻辑上可以认为每行数据的 rowkey 是 userId，需要通过90天的原始数据计算得到右边的表，它的横轴和纵轴都是日期，每个格子表示纵轴日期相对于横轴日期的留存率。</p>
+<p>该需求的挑战在于：</p>
+<ul>
+<li>日志量大，千亿级；</li>
+<li>任意维度，如 city、sex、喜好等，需要选择任意多个维度，在这些维度下计算留存率；</li>
+<li>秒级计算，产品面向分析师，等待时间不能过长，最好在1-2秒。</li>
+</ul>
+<h2 id="2-技术选型">2. 技术选型<a class="post-anchor" href="#2-技术选型"></a></h2><a href="/2020/01/19/bitbase-in-kwai/%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B.png" data-caption="业务需求" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B.png" alt="业务需求"></a>
+
+<p>调研的技术解决方案如下：</p>
+<ul>
+<li>Hive： 大部分数仓是基于hive建设的，选择hive的优势在于不需要做大规模数据的迁移和转换，缺点是计算<strong>时延</strong>过长，会达到小时级别。</li>
+<li>ES：通过对原始数据进行<strong>倒排索引</strong>，然后做一个类似于计算UV的解决方案，但是在数据需要做精确去重的场景下，时延需要秒到分钟级别。</li>
+<li>ClickHouse：ClickHouse 是一个比较合适的引擎，也是一个非常优秀的引擎，在业界被广泛应用于 APP 分析，比如漏斗，留存。但是在我们的测试的中，当机器数量比较少时 ( <10台 )，耗时依然在10秒以上。</li>
+</ul>
+<h2 id="BitBase-解决方案">BitBase 解决方案<a class="post-anchor" href="#BitBase-解决方案"></a></h2><h3 id="1-数据模型">1. 数据模型<a class="post-anchor" href="#1-数据模型"></a></h3><a href="/2020/01/19/bitbase-in-kwai/%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B.png" data-caption="数据模型" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B.png" alt="数据模型"></a>
+
+<p>如图，将原始数据加工成维度->bitmap的格式数据。</p>
+<h3 id="2-BitBase架构">2. BitBase架构<a class="post-anchor" href="#2-BitBase架构"></a></h3><a href="/2020/01/19/bitbase-in-kwai/BitBase%E6%9E%B6%E6%9E%84.png" data-caption="BitBase架构" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/BitBase%E6%9E%B6%E6%9E%84.png" alt="BitBase架构"></a>
+
+<p>BitBase架构主要由五部分组成：</p>
+<ul>
+<li>数据存储：存储数据主要是两种，一是bitmap索引及数据，二是转换字典的归档文件，主要用于deviceId和bitmap offsetId的转换。</li>
+<li>数据转换：转换有两种方式：一是通过mr任务加工，一是在线计算或导入数据。</li>
+<li>数据计算：负责计算任务的解析和调度，以及计算结果返回给client</li>
+<li>client：将计算逻辑封装成的业务接口，供调用方使用</li>
+<li>ZK：负责整个架构的分布式管理</li>
+</ul>
+<h3 id="3-存储模块">3. 存储模块<a class="post-anchor" href="#3-存储模块"></a></h3><a href="/2020/01/19/bitbase-in-kwai/%E5%AD%98%E5%82%A8%E6%A8%A1%E5%9D%97.png" data-caption="存储模块" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/%E5%AD%98%E5%82%A8%E6%A8%A1%E5%9D%97.png" alt="存储模块"></a>
+
+<p>BitBase数据历经原始日志数据->Bitmap数据->Hbase表三个阶段的转换操作，最终存储在Hbase表中。<br>Bitmap数据包括两部分：</p>
+<ul>
+<li>MetaData信息：唯一定位一个 bitmap，db 可以认为是 hive 中的 db，table 也可以认为是 hive 中的 table，event 表示维度 (如:城市)，eventv 表示维度值 (如:bj)，entity 表示 userId（也可能是 photoId），version 表示版本。</li>
+<li>BitmapData<br>Hbase表分为三种：</li>
+<li>BitmapMeta：保存 bitmap 的 meta 信息和一些 block 索引信息。</li>
+<li>BlockData：直接保存BitmapData信息</li>
+<li>BlockMeta：保存 block 的 meta 信息，起辅助作用。<br>这里注意，相同db的bitmap数据存储在同一张Hbase表中，从而在bitmap计算的时候，可以通过db判断数据的亲和性，同一db的数据计算效率会比较高。</li>
+</ul>
+<h3 id="4-计算模块">4. 计算模块<a class="post-anchor" href="#4-计算模块"></a></h3><a href="/2020/01/19/bitbase-in-kwai/%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%9D%97.png" data-caption="计算模块" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/%E8%AE%A1%E7%AE%97%E6%A8%A1%E5%9D%97.png" alt="计算模块"></a>
+
+<p>一个完整的计算流程包括client、BitBase Server和HBase RegionServer三部分。</p>
+<ul>
+<li><p>BitBase Client将业务需求封装成计算表达式，然后将表达式发送给BitBase Server。从客户端使用的角度来看，bitbase的预留符号有&、|、^、!、@、$、#、%、*，用预留符号表示与、或、非、Count、List、Create等操作。 </p>
+</li>
+<li><p>BitBase Server接收到表达式之后，首先访问BitmapMeta表，查询Block索引，然后将表达式切分成n个子表达式。</p>
+</li>
+<li><p>如果所有 bitmap 的 db 相同，则走 coprocessor 路由，否则按照数据亲和性，将 block 计算分发到其它 bitbaseServer 中。</p>
+</li>
+<li><p>根据第3步的调度策略，分两条不同的路径计算 block 表达式。</p>
+</li>
+<li><p>BitBase Server 聚合 block 计算表达式的结果，然后返回给 BitBase Client。<br>两种计算方式的对比：</p>
+</li>
+<li><p>非本地计算，解决跨 db 计算的需求，它主要的瓶颈在于网卡和 GC。</p>
+</li>
+<li><p>本地计算，解决同 db 计算的需求，它主要的瓶颈在 CPU 和 GC 上。整体上看本地计算的性能比非本地计算的性能提高3-5倍，所以要尽量采用本地计算方式。</p>
+</li>
+</ul>
+<h3 id="5-DeviceId问题">5. DeviceId问题<a class="post-anchor" href="#5-DeviceId问题"></a></h3><a href="/2020/01/19/bitbase-in-kwai/DeviceId%E9%97%AE%E9%A2%98.png" data-caption="DeviceId问题" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/DeviceId%E9%97%AE%E9%A2%98.png" alt="DeviceId问题"></a>
+
+<p>一句话描述问题：怎么<strong>高效</strong>实现字符串类型的DeviceId与long类型的offsetId之间的转换与反转换，并保证offsetId的<strong>一致性</strong>、<strong>连续性</strong>。</p>
+<ul>
+<li>连续：deviceIdIndex 如果存在空洞，会降低压缩效率，同时 Block 数量会增加，计算复杂度相应增加，最终计算变慢；</li>
+<li>一致：deviceId 和 deviceIdIndex 必须是一一对应的，否则计算结果不准确；</li>
+<li>反解：根据 deviceIdIndex 能够准确、快速地反解成原始的 deviceId；</li>
+<li>转换快：在亿级数据规模下，deviceId 转化为 deviceIdIndex 的过程不能太长。</li>
+</ul>
+<h3 id="6-DeviceId方案">6. DeviceId方案<a class="post-anchor" href="#6-DeviceId方案"></a></h3><h4 id="连续、一致、支持反解：">连续、一致、支持反解：<a class="post-anchor" href="#连续、一致、支持反解："></a></h4><a href="/2020/01/19/bitbase-in-kwai/DeviceId%E6%96%B9%E6%A1%88.png" data-caption="DeviceId方案" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/DeviceId%E6%96%B9%E6%A1%88.png" alt="DeviceId方案"></a>
+
+<p>如何保证连续、一致、支持反解？解决方案非常简单，利用 HBase 实现<strong>两阶段提交协议</strong>。如上图中间实线部分所示，定义 deviceId 到 deviceIdIndex 的映射为字典。第一张表存储字典的 meta 信息；第二张表存储 index 到 deviceId 的映射；第三张表存储 deviceId 到 index 的映射。</p>
+<p>生成 Index 的过程。举例说明, 假设我们已经生成了 1w 个 deviceId 映射，那么此时 f:max=1w，现在将新生成 1k 条映射：</p>
+<ul>
+<li>将 f:nextMax=f:max+1k=1.1w；</li>
+<li>写 Index 到 deviceId 的反向映射表，1k 条；</li>
+<li>写 deviceId 到 Index 的正向映射表，1k 条；</li>
+<li>把 f:max=f:nextMax=1.1w 更新到 meta 表，生成过程结束。</li>
+</ul>
+<p><strong>如果在生成过程中出现异常或服务器宕机，则执行回滚流程</strong>：</p>
+<ul>
+<li>如果我们检测到 f:nextMax 不等于 f:max(f:nextMax>f:max)，则从表2中查询 max 到 nextMax 的数据，从表3中删掉相应的 deviceId 到 index 的映射记录；</li>
+<li>再删掉表2中相应的 index 到 deviceId 的记录；</li>
+<li>最后把 f:nextMax=f:max，从而实现数据100%一致。<br>用 HBase 实现两阶段提交协议要求 index 生成流程和回滚流程一定是单线程的，从而出现性能瓶颈，所以 BitBase 设计了归档流程，以支持快速转换(见后面的描述)。Meta 表中有两个字段，如果发现新产生的数据大于 f:archive_num 就发起归档，把表3中的新数据直接写到 HDFS 中 archive_path 目录下。</li>
+</ul>
+<p>采用上述方案与TD的spark程序给offset发号的方案相比，因为增加了监控和回滚方案，所以可靠性更高。</p>
+<h4 id="快速转化：">快速转化：<a class="post-anchor" href="#快速转化："></a></h4><a href="/2020/01/19/bitbase-in-kwai/%E5%BF%AB%E9%80%9F%E8%BD%AC%E5%8C%96.png" data-caption="快速转化" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/%E5%BF%AB%E9%80%9F%E8%BD%AC%E5%8C%96.png" alt="快速转化"></a>
+
+<p>用mr join操作实现转换，转换分deviceId->offsetId和offsetId->deviceId两种，首先看deviceId->offsetId：</p>
+<ul>
+<li>同时输入原始数据和字典归档数据，在 MRjob 中根据 deviceId 做 join；<br>判断 deviceId 是否 join 成功；</li>
+<li>如果成功了，直接写 hdfs，这样就得到了转化后的数据；</li>
+<li>如果 join 失败，直接请求单实例 BitBase Master，BitBase Master 通过两阶段提交协议生成新的映射；</li>
+<li>然后返回给 join task 执行替换 deviceId；</li>
+<li>把转换后的数据写入 hdfs。</li>
+</ul>
+<p>offsetId->deviceId反解的过程很简单，直接多并发读取 HBase。</p>
+<h2 id="业务效果">业务效果<a class="post-anchor" href="#业务效果"></a></h2><h3 id="1-时间延迟">1. 时间延迟<a class="post-anchor" href="#1-时间延迟"></a></h3><a href="/2020/01/19/bitbase-in-kwai/%E4%B8%9A%E5%8A%A1%E6%95%88%E6%9E%9C.png" data-caption="业务效果" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/%E4%B8%9A%E5%8A%A1%E6%95%88%E6%9E%9C.png" alt="业务效果"></a>
+<p>如上图所示，第一个图是，两维度、不同时间跨度计算留存的时间延迟；第二个图是15日留存在不同维度上的时延，时延并不会随着维度的增长而增长，原因是维度越多，表达式中可能不需要计算的 block 块也越多。</p>
+<h3 id="2-服务现状">2. 服务现状<a class="post-anchor" href="#2-服务现状"></a></h3><a href="/2020/01/19/bitbase-in-kwai/%E6%9C%8D%E5%8A%A1%E7%8E%B0%E7%8A%B6.png" data-caption="服务现状" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/%E6%9C%8D%E5%8A%A1%E7%8E%B0%E7%8A%B6.png" alt="服务现状"></a>
+<p>如上图所示，BitBase 可以应用在 app 分析，用户增长，广告 DMP，用户画像等多个业务场景中。</p>
+<h2 id="未来规划">未来规划<a class="post-anchor" href="#未来规划"></a></h2><a href="/2020/01/19/bitbase-in-kwai/%E6%9C%AA%E6%9D%A5%E8%A7%84%E5%88%92.png" data-caption="未来规划" data-fancybox="images"><img src="/2020/01/19/bitbase-in-kwai/%E6%9C%AA%E6%9D%A5%E8%A7%84%E5%88%92.png" alt="未来规划"></a>
+<p>根据现在面临的业务场景，BitBase 后续会在多个方面做优化。</p>
+<ul>
+<li>支持实时聚合，在一些业务场景下，如运营效果监测，导入时效需要 <5min，BitBase 需要支持实时聚合；</li>
+<li>支持 SQL 查询，目前只支持 api 的接入方式，在一些简单场景下比较复杂；</li>
+<li>开源，希望通过开源，和大家一起挖掘 BitBase 的业务场景。</li>
+</ul>
+<h2 id="内部使用经验">内部使用经验<a class="post-anchor" href="#内部使用经验"></a></h2><p>前面4个部分的涵盖了对外部能分享的内容，该部分总结一下快手内部的实际使用经验。</p>
+<ul>
+<li>字典瓶颈。在实际使用中，我们发现字典有两个瓶颈：1、当用户的转换表数据量比较小时(小于10亿级别)，转换成本会比较高，原因是字典文件本身比数据大，此时发现字典的join和io占据了转换成本的大部分;</li>
+<li>bitbase master单进程转换出现单点瓶颈问题，原因是虽然理论上每天新增的did不多，但是业务在实际使用中发起的“新产生请求”中大部分did是已经产生过的。当前我们已经将字典抽取为独立的服务，暂时解决了以上两个问题，但是在HA/易用性方面还不够完善。</li>
+<li>缓存瓶颈。在前文的本地性计算中，一些业务场景下，缓存命中率比较高，但Hbase的缓存策略是以block的方式缓存原始数据，而Bitbase真正的数据结构是RoaringBitmap，导致高并发下系统会频繁的做“解压->构建bitmap”的重复操作，加重gc问题。下一步打算直接缓存bitmap。</li>
+<li>数据过期与删除问题。在使用实践中，我们发现用户数据的过期方式有两种：第一种是按照bitmap的版本个数进行删除，比如: 只保留bitmap的最先1个版本；第二种是按照导入数据的时间，用TTL来判断过期。由于一个bitmap不能完全映射为一个HBase cell，所以这两种过期方式不能完全映射为HBase的多version控制模式和TTL过期模式。我们现在支持手动执行bitmap的version过期和TTL过期清理，维护成本比较高，后续会支持用户自助配置，系统自动清理的方式。</li>
+</ul>
+<h2 id="个人疑问">个人疑问<a class="post-anchor" href="#个人疑问"></a></h2><ul>
+<li>GreenPlum也能提供大数据量Bitmap的交叉运算及查询交互，不知道有没有对GP这种解决方案做过调研，或者是处于什么原因没有直接使用GP求解。<br>个人思考：公司内部对GP并不是很了解，Hbase整体应用比较成熟，而且基于Hbase可以更加灵活的定制字典转换表等方案，更有利于后期功能和效率的改进。</li>
+</ul>
+</body></html>
+
+  
+    <div class="post-reward">
+    <div id="reward-button">打赏</div>
+      <div id="qr">
+        <div class="wrap">
+            
+            <div class="bg-wrap">
+              <a href="/images/zhifubao.png" target="_block" class="bg" style="background-image:url('/images/zhifubao.png')"></a>
+              支付宝
+            </div>
+            
+            
+            <div class="bg-wrap">
+                <a href="/images/weixin.png" target="_block" class="bg" style="background-image:url('/images/weixin.png')"></a>
+              微信
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  
+  <div class="post-guide">
+    <div class="item left">
+        
+    </div>
+    <div class="item right">
+        
+          <a href="/2020/01/18/bitmap/">Bitmap详解</a>
+        
+    </div>
+  </div>
+
+  
+
+  <div class="post-copyright">
+    <div class="auth">
+      本文作者：<a href="http://renzehello.github.io">黑泽暗</a>
+    </div>
+    <div class="link">
+      永久链接：<a href="http://renzehello.github.io/2020/01/19/bitbase-in-kwai/">http://renzehello.github.io/2020/01/19/bitbase-in-kwai/</a>
+    </div>
+    <div class="declare">
+      版权声明：本文首发于<a href="http://renzehello.github.io">黑泽暗</a>的博客，转载请注明出处！
+    </div>
+  </div>
+
+  <div id="comment"></div>
+
+  
+  
+</article>
+        <footer>
+          <div class="copyright">
+            ©2020
+            <a href="http://renzehello.github.io">黑泽暗</a> Powered by <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> |
+            <a href="https://github.com/shixiaohu2206/hexo-theme-huhu" target="_blank" rel="noopener">hexo-theme-huhu</a>
+          </div>
+          
+        </footer>
+      </div>
+    </div>
+  </body>
+  
+</html>
+<script type="text/javascript">
+                  window.HUHU_CONFIG = JSON.parse("{\"share\":[\"weibo\",\"weixin\",\"qqkongjian\",\"QQ\",\"douban\",\"facebook\",\"twitter\",\"google\"],\"valine\":{\"API_ID\":\"lPXm1O7hgA80cbP3TJUtXnkR-gzGzoHsz\",\"API_KEY\":\"N6hTkS9wtmUqujl1MaUeCFjq\"},\"service_worker\":{\"open\":false}}")
+                </script> <script type="text/javascript">window.addEventListener('load', function() {
+    
+    window.loadJs = function(d, m, a) {
+      var c = document.getElementsByTagName('head')[0] || document.head || document.documentElement
+      var b = document.createElement('script')
+      b.defer = true
+      b.setAttribute('type', 'text/javascript')
+      b.setAttribute('charset', 'UTF-8')
+      b.setAttribute('async', 'true')
+      b.setAttribute('src', d)
+      m && b.setAttribute('data-main', '/scripts/app-built')
+      if (typeof a === 'function') {
+        if (window.attachEvent) {
+          b.onreadystatechange = function() {
+            var e = b.readyState
+            if (e === 'loaded' || e === 'complete') {
+              b.onreadystatechange = null
+              a()
+            }
+          }
+        } else {
+          b.onload = a
+        }
+      }
+      c.appendChild(b)
+    }
+    window.loadJs && window.loadJs('https://cdn.bootcss.com/require.js/2.3.6/require.min.js', true, function() {require.config({"paths":{"util":"util","share":"share","search":"search","pagemap":"pagemap.min","registerSW":"registerSW","valine":"cdn/Valine.min","av":["https://cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min"],"pjax":["https://cdn.bootcss.com/jquery.pjax/2.0.1/jquery.pjax.min"],"jquery":["https://cdn.bootcss.com/jquery/3.4.1/jquery.min"],"confirm":["https://cdn.bootcss.com/jquery-confirm/3.3.4/jquery-confirm.min"],"fancybox":["https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min"],"chart":["https://cdn.bootcss.com/Chart.js/2.8.0-rc.1/Chart.bundle.min"]},"map":{"*":{"css":"https://cdn.bootcss.com/require-css/0.1.10/css.min.js"}},"shim":{"fancybox":{"deps":["css!https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css"]},"confirm":{"deps":["css!https://cdn.bootcss.com/jquery-confirm/3.3.4/jquery-confirm.min.css"]},"chart":{"deps":["css!https://cdn.bootcss.com/Chart.js/2.8.0-rc.1/Chart.min.css"]}},"waitSeconds":3})})
+  })</script> <script type="text/javascript">
+                  ;(function() {
+                    var bp = document.createElement('script')
+                    var curProtocol = window.location.protocol.split(':')[0]
+                    if (curProtocol === 'https') {
+                      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js'
+                    } else {
+                      bp.src = 'http://push.zhanzhang.baidu.com/push.js'
+                    }
+                    var s = document.getElementsByTagName('script')[0]
+                    s.parentNode.insertBefore(bp, s)
+                  })()
+                </script> 
