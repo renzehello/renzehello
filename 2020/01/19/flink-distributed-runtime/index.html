@@ -29,7 +29,7 @@
     
     <div id="post-toc" class="animated hiddenToc hide">
       <span class="title">Toc</span>
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Tasks和操作链（Operator-Chains）"><span class="toc-text">Tasks和操作链（Operator Chains）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Job-Managers-Task-Managers-Clients"><span class="toc-text">Job Managers, Task Managers, Clients</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Task-Slots-and-Resources"><span class="toc-text">Task Slots and Resources</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#State-Backends"><span class="toc-text">State Backends</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Savepoints"><span class="toc-text">Savepoints</span></a></li></ol></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Tasks和操作链（Operator-Chains）"><span class="toc-text">Tasks和操作链（Operator Chains）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Job-Managers-Task-Managers-Clients"><span class="toc-text">Job Managers, Task Managers, Clients</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Task-Slots-and-Resources"><span class="toc-text">Task Slots and Resources</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#State-Backends"><span class="toc-text">State Backends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Savepoints"><span class="toc-text">Savepoints</span></a></li></ol>
     </div>
     
     <div id="fixed-menu-wrap">
@@ -236,7 +236,7 @@
 <p>Flink API 中包含一个 resource group 机制，可以避免不合理的任务槽共享。一般来说，默认的任务槽数量应设置为 CPU cores 的数量。</p>
 <h2 id="State-Backends">State Backends<a class="post-anchor" href="#State-Backends"></a></h2><a href="/2020/01/19/flink-distributed-runtime/checkpoints.svg" data-caption="checkpoints" data-fancybox="images"><img src="/2020/01/19/flink-distributed-runtime/checkpoints.svg" alt="checkpoints"></a>
 <p>Flink中提供了StateBackend来存储和管理Checkpoint过程中的状态数据。Flink中一共实现了三种类型的状态管理器，包括基于内存的MemoryStateBackend，基于文件系统的FsStateBackend和基于RockDB作为存储介质的RocksDBStateBackend。这三种类型的StateBackend均能有效地存储Flink流式计算过程中产生的状态数据，默认情况下Flink使用的是内存作为状态管理器。除了定义保存状态的数据结构之外，StateBackend还实现了获取key/value状态的时间点snapshot的逻辑，并将该snapshot存储为Checkpoint的一部分。</p>
-<h3 id="Savepoints">Savepoints<a class="post-anchor" href="#Savepoints"></a></h3><p>  使用DataStream API中编写的程序可以使用Savepoint恢复执行。Savepoint允许在不丢失任何状态的情况下更新程序和Flink集群。Savepoint是手动触发的Checkpoint，它获取程序的Snapshot并将其写入StateBackend。它们依赖于常规的Checkpoint机制。程序在执行过程中，会定期在工作节点上进行Snapshot并生成Checkpoint。对于恢复，只需要最后一个完成的Checkpoint，而之前的Checkpoint可以在新的Checkpoint完成后直接安全地丢弃掉。Savepoint类似于这些定期的Checkpoint，只是它们是由用户触发的并且在新Checkpoint完成时不会自动过期。可以从命令行或通过REST API在取消作业时创建Savepoint。</p>
+<h2 id="Savepoints">Savepoints<a class="post-anchor" href="#Savepoints"></a></h2><p>  使用DataStream API中编写的程序可以使用Savepoint恢复执行。Savepoint允许在不丢失任何状态的情况下更新程序和Flink集群。Savepoint是手动触发的Checkpoint，它获取程序的Snapshot并将其写入StateBackend。它们依赖于常规的Checkpoint机制。程序在执行过程中，会定期在工作节点上进行Snapshot并生成Checkpoint。对于恢复，只需要最后一个完成的Checkpoint，而之前的Checkpoint可以在新的Checkpoint完成后直接安全地丢弃掉。Savepoint类似于这些定期的Checkpoint，只是它们是由用户触发的并且在新Checkpoint完成时不会自动过期。可以从命令行或通过REST API在取消作业时创建Savepoint。</p>
 </body></html>
 
   
