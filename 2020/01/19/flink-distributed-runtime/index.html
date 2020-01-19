@@ -16,7 +16,7 @@
     <meta name="description" content="" />
     
     <title>
-      数据健康分项目总结 - RZ
+      Flink分布式运行时环境 - RZ
     </title>
     <link rel="manifest" href="/manifest.json" />
     <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
@@ -29,7 +29,7 @@
     
     <div id="post-toc" class="animated hiddenToc hide">
       <span class="title">Toc</span>
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#背景"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#面向主体"><span class="toc-text">面向主体</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#健康分计算规则"><span class="toc-text">健康分计算规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#规划"><span class="toc-text">规划</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-方法论"><span class="toc-text">1. 方法论</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-核心高热表元数据完善"><span class="toc-text">2. 核心高热表元数据完善</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-top表生命周期覆盖"><span class="toc-text">3. top表生命周期覆盖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-无主表认领"><span class="toc-text">4. 无主表认领</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-运营和透出"><span class="toc-text">5. 运营和透出</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#收益"><span class="toc-text">收益</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Tasks和操作链（Operator-Chains）"><span class="toc-text">Tasks和操作链（Operator Chains）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Job-Managers-Task-Managers-Clients"><span class="toc-text">Job Managers, Task Managers, Clients</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Task-Slots-and-Resources"><span class="toc-text">Task Slots and Resources</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#State-Backends"><span class="toc-text">State Backends</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Savepoints"><span class="toc-text">Savepoints</span></a></li></ol></li></ol>
     </div>
     
     <div id="fixed-menu-wrap">
@@ -171,7 +171,7 @@
         <article class="post-entry">
     <div class="header">
       
-      <div class="title">数据健康分项目总结</div>
+      <div class="title">Flink分布式运行时环境</div>
       <div class="meta">
         <span class="item">
           <span class="iconfont icon-time-circle"></span>
@@ -179,7 +179,7 @@
         </span>
 
         
-          <span class="item leancloud-visitors" id="/2020/01/19/data-health-score/" data-flag-title="数据健康分项目总结">
+          <span class="item leancloud-visitors" id="/2020/01/19/flink-distributed-runtime/" data-flag-title="Flink分布式运行时环境">
             <span class="iconfont icon-eye1"></span>
             <span class="leancloud-visitors-count"></span>
           </span>
@@ -191,7 +191,7 @@
           <span>
               
                 
-                  <a href="/categories/Business">Business</a>
+                  <a href="/categories/Usage">Usage</a>
                 
               
           </span>
@@ -204,7 +204,7 @@
             <span>
                 
                   
-                    <a href="/tags/Data Governance">Data Governance</a>
+                    <a href="/tags/Flink">Flink</a>
                   
                 
             </span>
@@ -214,29 +214,24 @@
       <div>
       </div>
     </div>
-    <html><head></head><body><p>数据健康分是由数据资产组在19年下半年推动的一个项目，健康分旨在通过一个分数来定量描述目前数据资产、各业务线在数据方面存在的问题情况，并通过分数各个组成部分来定位到数据问题所在的具体方面，进而推动各部门和数据负责人改进问题，提高数据资产价值。由此可见，并不能将健康分简单地描述为一个指标，在这个指标的指定规则后面，体现的是一整套数据资产价值的衡量体系，通过该体系组成的变化，可以有针对性地间接透出当前阶段数据治理的方向和目标。</p>
-<h2 id="背景">背景<a class="post-anchor" href="#背景"></a></h2><p>当前阶段各业务线数据资产存在的主要问题：</p>
+    <html><head></head><body><h2 id="Tasks和操作链（Operator-Chains）">Tasks和操作链（Operator Chains）<a class="post-anchor" href="#Tasks和操作链（Operator-Chains）"></a></h2><p><% asset_img tasks_chains.svg tasks_chains %></p>
+<p>在分布式执行的时候，Flink可以将多个operator subtasks合并成一个操作链（operator chains），即一个task（我理解这里的task应该不是指完整的一个计算流程，应该是以重分布operator为界进行划分的）。每个task由一个线程执行，这样做的好处是能够减少线程间切换和缓存的开销，增加整个系统的吞吐量。</p>
+<p>上图实例中包含五个suntasks，对应五个并行的thread。<br>注意结合flink编程模型中operator subtask和subtask的区别。operator subtask对应一个operaoter节点，subtask对应一个operatoer chain。</p>
+<h2 id="Job-Managers-Task-Managers-Clients">Job Managers, Task Managers, Clients<a class="post-anchor" href="#Job-Managers-Task-Managers-Clients"></a></h2><p><% asset_img processes.svg processes %><br>Flink分布式运行时由两种进程组成：</p>
 <ul>
-<li>元数据完整性低：无负责人、缺少必要描述信息。–数据找不到，数据不清楚</li>
-<li>计算和存储资源浪费：僵尸表、无用表、没有生命周期管理</li>
-<li>数据生产延迟、数据质量难以保证。<br>希望通过将发现的问题归纳量化成健康分，通过分数反映目前数据资产、各个业务线在数据方面中存在问题，并通过各组成部分的分数映射到各个问题点，提醒相关人员和部门进行优化。</li>
+<li>JobManager（或Master）：用于协调分布式执行。负责调度任务，检查点，失败恢复等。一般是一个JM，高可用架构下会有多个JM，但是只有一个运行，其余是standby。</li>
+<li>TaskManager（或Worker）：负责具体的tasks执行（更准确地说，是计算子任务），并对数据流进行缓冲、交换。Flink 运行环境中至少包含一个任务管理器。</li>
 </ul>
-<h2 id="面向主体">面向主体<a class="post-anchor" href="#面向主体"></a></h2><p>分为表、个人、一级部门。每个级别的主体，都会透出相应的健康分。</p>
-<h2 id="健康分计算规则">健康分计算规则<a class="post-anchor" href="#健康分计算规则"></a></h2><p>不在此进行细节说明。</p>
-<h2 id="规划">规划<a class="post-anchor" href="#规划"></a></h2><h3 id="1-方法论">1. 方法论<a class="post-anchor" href="#1-方法论"></a></h3><p><% asset_img 方法论.png 方法论 %><br>发现问题 - 数据抽象 - 优化分析 - 推动优化 - 持续监控</p>
-<h3 id="2-核心高热表元数据完善">2. 核心高热表元数据完善<a class="post-anchor" href="#2-核心高热表元数据完善"></a></h3><ul>
-<li>介绍：梳理出核心和高热的数据重点进行元数据的补充完善，共计完成1113张表元数据补充完善。</li>
-<li>持续：按周对数仓新增表元数据完善情况进行监控，及时邮件提醒数仓同学进行完善。</li>
+<p>TM和JM可以运行在多种集群环境，例如standalone集群、容器、YARN等。TM会连接JM，并通报自己的健康情况，等待被分配任务。</p>
+<h2 id="Task-Slots-and-Resources">Task Slots and Resources<a class="post-anchor" href="#Task-Slots-and-Resources"></a></h2><p><% asset_img tasks_slots.svg tasks_slots%><br>每个 worker（TaskManager）都是一个独立的JVM进程，在独立线程里运行一个或更多的子任务。为了控制 worker 接收任务的数量，在 worker 中引入了任务槽（Task slots）的概念（每个 worker 中至少包含一个 slot）。<br>每个 Task slot 代表 TaskManager 中一个固定的资源池子集。如果一个 TaskManager 有3个 slots，每个 slot 会分配其 1/3 的内存。将资源进行分槽可以让子任务避免同其他作业中的子任务竞争资源。注意，这里没有对 CPU 进行隔离；目前任务槽仅仅用于划分任务的内存。<br>通过调整 Task slot 的数量，用户可以设定子任务之间独立运行的程度。如果 TaskManager 中只有一个槽，那么每个任务组都会在一个独立的JVM中运行。TaskManager 中配置更多的槽就意味着会有更多的子任务共享同一个 JVM。在同一个 JVM 中的任务会共享 TCP 连接（通过多路复用的方式）和心跳信息，同时他们也会共享数据集和数据结构，这在某种程度上可以降低单个任务的开销。</p>
+<p><% asset_img slot_sharing.svg slot_sharing%><br>默认情况下，Flink允许来自不同task的subtask共享槽位，只要这些subtask属于同一个job。因此一个slot可以hold整个工作流。共享槽位有两个好处：</p>
+<ul>
+<li>Flink集群可以确保Task Slot个数与Job最高并行度一致，不需要计算task的具体数量。</li>
+<li>提高资源利用率。如果没有槽共享机制，非密集型的 source/map() 子任务就会和密集型的 window 子任务一样阻塞大量资源。如果有任务槽共享机制，在程序的并发量从 2 提高到 6 的情况下（如下图），就可以让密集型子任务完全分散到任务管理器中，从而可以显著提高槽的资源利用率。说白了，槽共享机制就决定了每个槽位并不是只能运行某一类subtask，这样密集型的operator task就可以完全分派给所有的slot，从而增加并行度和资源使用效率。</li>
 </ul>
-<h3 id="3-top表生命周期覆盖">3. top表生命周期覆盖<a class="post-anchor" href="#3-top表生命周期覆盖"></a></h3><ul>
-<li>介绍：对各业务线top表进行生命周期推进，目前共计5304张表覆盖生命周期，日均清理超过1.8PB数据空间(未计算副本数)，配合架构ec操作。目前除dp外其他业务线存储基本实现自循环</li>
-<li>持续：根据数据最近的访问、依赖情况定期向用户推送生命周期设置和表下线建议。用户可以使用资产管理中心进行便捷安全的数据下线和清理操作。</li>
-</ul>
-<h3 id="4-无主表认领">4. 无主表认领<a class="post-anchor" href="#4-无主表认领"></a></h3><ul>
-<li>介绍：对各业务线的无主表开展有奖认领活动，共计认领19238张表(占比超过75%，目标60%)，其中下线表超过7155张表。</li>
-<li>持续：目前像datasink等工具建表入口负责人信息收集基本已经收敛，spark等客户端建表入口负责人信息收集还需收敛</li>
-</ul>
-<h3 id="5-运营和透出">5. 运营和透出<a class="post-anchor" href="#5-运营和透出"></a></h3><h2 id="收益">收益<a class="post-anchor" href="#收益"></a></h2><p>健康分的推动并非简单的制定规则->强行推动的过程，与数据治理其他项目一样，健康分项目也是一个重运营的事情，需要在运营主体主动接受的前提下，做到润物细无声的推动。因此除了制定规则，还需要根据实际情况提供工具手段、增加平台功能，减轻用户提高健康分的时间和人力成本。同时也需要配合运营活动，一方面透出健康分的成果和收益，一方面增加健康分主体的积极性。</p>
+<p>Flink API 中包含一个 resource group 机制，可以避免不合理的任务槽共享。一般来说，默认的任务槽数量应设置为 CPU cores 的数量。</p>
+<h2 id="State-Backends">State Backends<a class="post-anchor" href="#State-Backends"></a></h2><p><% asset_img checkpoints.svg checkpoints %><br>Flink中提供了StateBackend来存储和管理Checkpoint过程中的状态数据。Flink中一共实现了三种类型的状态管理器，包括基于内存的MemoryStateBackend，基于文件系统的FsStateBackend和基于RockDB作为存储介质的RocksDBStateBackend。这三种类型的StateBackend均能有效地存储Flink流式计算过程中产生的状态数据，默认情况下Flink使用的是内存作为状态管理器。除了定义保存状态的数据结构之外，StateBackend还实现了获取key/value状态的时间点snapshot的逻辑，并将该snapshot存储为Checkpoint的一部分。</p>
+<h3 id="Savepoints">Savepoints<a class="post-anchor" href="#Savepoints"></a></h3><p>  使用DataStream API中编写的程序可以使用Savepoint恢复执行。Savepoint允许在不丢失任何状态的情况下更新程序和Flink集群。Savepoint是手动触发的Checkpoint，它获取程序的Snapshot并将其写入StateBackend。它们依赖于常规的Checkpoint机制。程序在执行过程中，会定期在工作节点上进行Snapshot并生成Checkpoint。对于恢复，只需要最后一个完成的Checkpoint，而之前的Checkpoint可以在新的Checkpoint完成后直接安全地丢弃掉。Savepoint类似于这些定期的Checkpoint，只是它们是由用户触发的并且在新Checkpoint完成时不会自动过期。可以从命令行或通过REST API在取消作业时创建Savepoint。</p>
 </body></html>
 
   
@@ -263,12 +258,10 @@
   <div class="post-guide">
     <div class="item left">
         
-          <a href="/2020/01/19/flink-distributed-runtime/">Flink分布式运行时环境</a>
-        
     </div>
     <div class="item right">
         
-          <a href="/2020/01/19/bitbase-in-kwai/">BitBase在用户数据分析中的应用与实践</a>
+          <a href="/2020/01/19/data-health-score/">数据健康分项目总结</a>
         
     </div>
   </div>
@@ -280,7 +273,7 @@
       本文作者：<a href="http://renzehello.github.io">黑泽暗</a>
     </div>
     <div class="link">
-      永久链接：<a href="http://renzehello.github.io/2020/01/19/data-health-score/">http://renzehello.github.io/2020/01/19/data-health-score/</a>
+      永久链接：<a href="http://renzehello.github.io/2020/01/19/flink-distributed-runtime/">http://renzehello.github.io/2020/01/19/flink-distributed-runtime/</a>
     </div>
     <div class="declare">
       版权声明：本文首发于<a href="http://renzehello.github.io">黑泽暗</a>的博客，转载请注明出处！
