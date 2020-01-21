@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <script>
+  var _hmt = _hmt || []
+  ;(function() {
+    var hm = document.createElement('script')
+    hm.src = 'https://hm.baidu.com/hm.js?5a0acc897fd96474a2c8f4deac84611a'
+    var s = document.getElementsByTagName('script')[0]
+    s.parentNode.insertBefore(hm, s)
+  })()
+</script> 
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    
+    <title>
+      元数据总线设计 - RZ
+    </title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+    
+<link rel="stylesheet" href="/style/style.css">
+
+  <meta name="generator" content="Hexo 4.2.0"></head>
+  <body>
+    <canvas id='pagemap'></canvas>
+    
+    <div id="post-toc" class="animated hiddenToc hide">
+      <span class="title">Toc</span>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务需求与挑战"><span class="toc-text">业务需求与挑战</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-旧版元数据总线问题"><span class="toc-text">1. 旧版元数据总线问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-业务目标"><span class="toc-text">2. 业务目标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#元数据总线解决方案"><span class="toc-text">元数据总线解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-架构设计"><span class="toc-text">1. 架构设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-消息设计"><span class="toc-text">2. 消息设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-关键流程"><span class="toc-text">3. 关键流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#迁移方案"><span class="toc-text">迁移方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#未来规划"><span class="toc-text">未来规划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-text">问题</span></a></li></ol>
+    </div>
+    
+    <div id="fixed-menu-wrap">
+      <span class="iconfont icon-sousuo search-box menu-reset"></span>
+      <span class="icon-toc menu-reset">Toc</span>
+      <span class="iconfont icon-arrowup menu-reset"></span>
+    </div>
+    <div id="fixed-menu">
+      <span class="iconfont icon-menu-"></span>
+    </div>
+    <div id="progress">
+      <div class="line"></div>
+    </div>
+    <div id="search-shade" class="animated hiddenSearch hide">
+      <div class="input-wrap">
+        <span class="iconfont icon-sousuo search-box"></span>
+        <input type="text" placeholder="Search" />
+        <span class="iconfont icon-close"></span>
+      </div>
+      <div class="search-result">
+        <div class="meta">
+          <span><b id="result-count">0</b> results found</span>
+          <img src="/images/logo.jpeg" />
+        </div>
+        <ul id="result-box"></ul>
+      </div>
+    </div>
+    <div id="menu-mask" class="animated hideMenuMask hide">
+      <span class="iconfont icon-close"></span>
+      <div class="nav">
+        
+        <a href="/" class="">
+          首页
+        </a>
+        
+        <a href="/archives" class="">
+          归档
+        </a>
+        
+        <a href="/categories" class="">
+          分类
+        </a>
+        
+        <a href="/tags" class="">
+          标签
+        </a>
+        
+        <a href="/friends" class="">
+          友链
+        </a>
+        
+        <a href="/about" class="">
+          关于
+        </a>
+        
+      </div>
+    </div>
+    <div id="header">
+      <div class="intro">
+        <a href="/" class="logo" style="background-image: url('/images/logo.jpeg')"></a>
+        <div class="author">黑泽暗</div>
+      </div>
+      <div class="nav">
+        <span class="iconfont icon-menu menu-icon"></span>
+        <a href="#" class="search-box">
+          <span class="iconfont icon-sousuo"></span>
+        </a>
+      </div>
+    </div>
+    <div id="side" class="animated bounceInLeft">
+      <div class="shrink">
+        <a href="/" class="logo" style="background-image: url('/images/logo.jpeg')"></a>
+        <span class="iconfont icon-menu toggle-icon"></span>
+        <a href="#" class="search-box">
+          <span class="iconfont icon-sousuo"></span>
+        </a>
+      </div>
+      <div class="magnify">
+        <div class="about">
+          <div class="author">黑泽暗</div>
+          <a href="/" class="logo" style="background-image: url('/images/logo.jpeg')"></a>
+        </div>
+
+        <div class="nav">
+          
+          <a href="/" class="">
+            首页
+          </a>
+          
+          <a href="/archives" class="">
+            归档
+          </a>
+          
+          <a href="/categories" class="">
+            分类
+          </a>
+          
+          <a href="/tags" class="">
+            标签
+          </a>
+          
+          <a href="/friends" class="">
+            友链
+          </a>
+          
+          <a href="/about" class="">
+            关于
+          </a>
+          
+          <a href="#" class="search-box">
+            <span class="iconfont icon-sousuo"></span>
+          </a>
+        </div>
+        <div class="bottom">
+          <div class="follow">
+            
+            <a href="https://github.com/renzehello" target="_block">
+              <span class="iconfont icon-github"></span>
+            </a>
+            
+            <a href="https://github.com/renzehello" target="_block">
+              <span class="iconfont icon-facebook"></span>
+            </a>
+            
+            <a href="https://github.com/renzehello" target="_block">
+              <span class="iconfont icon-instagram"></span>
+            </a>
+             
+            <a href="/atom.xml" target="_block">
+              <span class="iconfont icon-rss"></span>
+            </a>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="container">
+      <div class="main animated bounceInRight delay-0.7s">
+        <article class="post-entry">
+    <div class="header">
+      
+        <div class="top">
+          <div class="iconfont icon-zuirehotxiankuang animated infinite heartBeat"></div>
+        </div>
+      
+      <div class="title">元数据总线设计</div>
+      <div class="meta">
+        <span class="item">
+          <span class="iconfont icon-time-circle"></span>
+          <span>2020/01/21</span>
+        </span>
+
+        
+          <span class="item leancloud-visitors" id="/2020/01/21/metadata-bus/" data-flag-title="元数据总线设计">
+            <span class="iconfont icon-eye1"></span>
+            <span class="leancloud-visitors-count"></span>
+          </span>
+        
+
+         
+        <span class="item">
+          <span class="iconfont icon-folder"></span>
+          <span>
+              
+                
+                  <a href="/categories/Data Governance">Data Governance</a>
+                
+              
+          </span>
+        </span>
+        
+        
+         
+          <span class="item">
+            <span class="iconfont icon-tag1"></span>
+            <span>
+                
+                  
+                    <a href="/tags/Architecture">Architecture</a>
+                  
+                
+            </span>
+          </span>
+         
+      </div>
+      <div>
+      </div>
+    </div>
+    <html><head></head><body><p>元数据是数据治理工作开展的基础，元数据读写操作的高效和准确是数据治理各个平台建设的保障。 19年下半年，对数据治理内部元数据API和元数据总线进行了一次深度改造。本次对元数据总线的系统架构、消息设计和关键流程进行分享。</p>
+<h2 id="概要">概要<a class="post-anchor" href="#概要"></a></h2><ul>
+<li>业务需求与挑战</li>
+<li>元数据总线解决方案</li>
+<li>迁移方案</li>
+<li>未来规划</li>
+</ul>
+<h2 id="业务需求与挑战">业务需求与挑战<a class="post-anchor" href="#业务需求与挑战"></a></h2><h3 id="1-旧版元数据总线问题">1. 旧版元数据总线问题<a class="post-anchor" href="#1-旧版元数据总线问题"></a></h3><a href="/2020/01/21/metadata-bus/%E6%97%A7%E7%89%88%E5%85%83%E6%95%B0%E6%8D%AE%E6%9E%B6%E6%9E%84.svg" data-caption="旧版元数据架构" data-fancybox="images"><img src="/2020/01/21/metadata-bus/%E6%97%A7%E7%89%88%E5%85%83%E6%95%B0%E6%8D%AE%E6%9E%B6%E6%9E%84.svg" alt="旧版元数据架构"></a>
+
+<p>整体来看，旧版元数据是一种高度耦合的中心化设计。DDL被HiveServer Hook和IDP（集成开发平台）解析之后发送Kafka，由元数据系统消费并存储。数据治理内部的各平台（包括数据地图、资产中心、安全中心、质量中心）以及IDP可以通过rpc或者REST的方式请求元数据系统，对元数据进行读取和写入操作。这样的架构目前遇到以下问题：</p>
+<ul>
+<li>数据完整性问题：HiveServer Hook和IDP难以覆盖所有场景的DDL操作。例如通过spark程序建表，通过beeline建表等。</li>
+<li>数据一致性问题：如果细节放大图所示，在通过IDP可视化建表的时候，按照图中步骤依次执行。<ol>
+<li>IDP将DDL（创建<strong>表和列</strong>语句）发送到HiveServer，</li>
+<li>由Hook解析DDL并发送到血缘系统</li>
+<li>血缘系统处理之后将新建表和列的信息发送到Kafka</li>
+<li>血缘系统将消息发送Kafka之后会通知IDP</li>
+<li>IDP发送业务元数据更新请求到Kafka</li>
+</ol>
+</li>
+</ul>
+<p>然而由于网络抖动，会偶发性地出现业务元数据更新消息比创建表和列消息先消费的情况，导致数据一致性问题出现。</p>
+<ul>
+<li>耦合严重：元数据系统维护了很多与其他平台业务相关的元数据信息（如资产的业务负责人、技术负责人和生命周期，安全的权限负责人、安全级别等）。随着治理业务的扩展，元数据系统将会越发臃肿。</li>
+<li>元数据来源扩展性问题：目前元数据来源类型主要是Hive信息，接入其他异构数据源，需要基于元数据系统提供定制的读写接口，扩展成本较高。</li>
+</ul>
+<h3 id="2-业务目标">2. 业务目标<a class="post-anchor" href="#2-业务目标"></a></h3><p>一句话描述元数据API/元数据改造的目标：以元数据API/元数据总线为基础，按元数据类别拆分到不同服务提供读写服务化、消息同步等；</p>
+<h2 id="元数据总线解决方案">元数据总线解决方案<a class="post-anchor" href="#元数据总线解决方案"></a></h2><h3 id="1-架构设计">1. 架构设计<a class="post-anchor" href="#1-架构设计"></a></h3><p><strong>该架构图以hive为例</strong></p>
+<a href="/2020/01/21/metadata-bus/%E6%96%B0%E5%85%83%E6%95%B0%E6%8D%AE%E6%9E%B6%E6%9E%84.png" data-caption="新元数据架构" data-fancybox="images"><img src="/2020/01/21/metadata-bus/%E6%96%B0%E5%85%83%E6%95%B0%E6%8D%AE%E6%9E%B6%E6%9E%84.png" alt="新元数据架构"></a>
+
+<p>新的元数据总线架构主要有以下特点：</p>
+<ul>
+<li>切换数据源：Hive元数据来源由HiveServer Hook&Idp切换为HiveServer MetaStore，从而保障了元数据完整性。</li>
+<li>解耦元数据系统SDK。按照业务类别将元数据拆分为基础元数据、资产元数据、安全元数据和质检元数据。对应存储、读写和SDK由各自业务平台独立维护。</li>
+<li>业务系统之间通信方式。元数据系统的解耦意味着需要一种更加灵活的通信方式，来保证各业务系统之间可以自由读取对方管理的元数据。旧版架构中，业务系统之间不直接进行通信，而是由元数据系统提供读写接口，业务系统只跟元数据系统进行通信。新的架构中，业务系统之间通过定制的消息格式，以元数据总线为通道实现消息通信。</li>
+</ul>
+<p>主要模块功能概述：</p>
+<ul>
+<li>Basic Server / Asset Server / Security Server / Quality Server<br>  可靠的相关元数据读写接口；<br>  相关元数据的存储；<br>  发送变更消息到元数据总线；</li>
+<li>Hive Level API<br>  封装核心SDK，提供合并、订制接口；<br>  兼容旧方案部分系统的功能；</li>
+<li>元数据总线（Basem SDK）<br>  提供统一的元数据变更消息定义；<br>  提供公共元数据相关工具类（Urn）</li>
+</ul>
+<h3 id="2-消息设计">2. 消息设计<a class="post-anchor" href="#2-消息设计"></a></h3><p>考虑到元数据间存在关联关系，项目内部均使用Java类进行描述与值传递，而与外部的数据传输（如：读写kafka、rpc接口），一般使用proto3进行。在此不会对元数据总线消息设计细节进行讲解，消息结构如下：<br>BasemBusEvent<br>字段 | 类型 |  说明 | 备注<br>-|-|-<br>from_biz | FromBiz | 事件来源<br>op_type | OpType | 操作类型 | 更新/删除/xxx<br>urn | string | urn<br>timestamp | uint64 | 消息生产的时间戳<br>event_package | one of | 消息体 | 具体参考实体定义</p>
+<h3 id="3-关键流程">3. 关键流程<a class="post-anchor" href="#3-关键流程"></a></h3><p><strong>创建Hive表</strong></p>
+<a href="/2020/01/21/metadata-bus/%E5%88%9B%E5%BB%BA%E8%A1%A8.png" data-caption="创建表" data-fancybox="images"><img src="/2020/01/21/metadata-bus/%E5%88%9B%E5%BB%BA%E8%A1%A8.png" alt="创建表"></a>
+
+<p>IDP是内部的数据集成开发平台，提供了可视化的工具辅助数据人员进行表创建工作。在创建Hive表的流程中，IDP会根据表元数据的业务类别拆分为基础元数据、资产元数据、安全元数据等类别：</p>
+<ul>
+<li>新建<strong>表和列</strong>的基础元数据：在HiveServer对MetaStore进行解析，并发送到元数据总线，被基础元数据Server消费；</li>
+<li>资产和安全等业务元数据：由IDP调用对应的业务系统Server执行存储逻辑。业务Server会对新建表的基础元数据是否存在进行校验，如果不存在会执行等待和超时处理策略；反之则会在业务系统内部执行元数据存储，并将元数据消息发送至元数据总线，继而被需要的其他业务系统所消费。解决旧版架构里数据一致性问题。</li>
+</ul>
+<p><strong>删除Hive表</strong></p>
+<a href="/2020/01/21/metadata-bus/%E5%88%A0%E9%99%A4%E8%A1%A8.png" data-caption="删除表" data-fancybox="images"><img src="/2020/01/21/metadata-bus/%E5%88%A0%E9%99%A4%E8%A1%A8.png" alt="删除表"></a>
+
+<p>删除表操作，首先通过生命周期系统对Hive表进行回收，Hive MetaStore Server将删除消息发送至Kafka被基础元数据系统消费，然后基础元数据系统会将删除消息发送至元数据总线，其他业务系统根据自身的需求对删除消息进行处理。</p>
+<h2 id="迁移方案">迁移方案<a class="post-anchor" href="#迁移方案"></a></h2><p>元数据总线上线的时候涉及到一个问题，如何在<strong>各业务系统不停机</strong>的情况下，保证新旧版本元数据的一致性。具体而言，在上线的时候，如果简单的采用迁移历史全量数据->切换新系统这种二阶段串行同步数据的方式，必然会在一个时间窗口内丢失实时的元数据读写请求（增删改查）。<br>因此需要制定一个平滑迁移的方案，保障数据的一致性和系统的可靠性，下面以资产中心迁移流程为例说明：</p>
+<a href="/2020/01/21/metadata-bus/%E8%B5%84%E4%BA%A7%E4%B8%AD%E5%BF%83%E8%BF%81%E7%A7%BB%E6%B5%81%E7%A8%8B.png" data-caption="资产中心迁移流程" data-fancybox="images"><img src="/2020/01/21/metadata-bus/%E8%B5%84%E4%BA%A7%E4%B8%AD%E5%BF%83%E8%BF%81%E7%A7%BB%E6%B5%81%E7%A8%8B.png" alt="资产中心迁移流程"></a>
+
+<p>如图所示，资产中心迁移流程分为两个阶段<strong>依次</strong>执行：</p>
+<ul>
+<li>基础库表列元数据迁移：需要保证基础库表列的变更与metastore一致。<ol>
+<li>暂停基础元数据Basis Server消费MetaStore发到Kafka的消息。</li>
+<li>调用basis提供的接口，拉取旧元数据系统的全量数据（实际上是一份快照数据）。</li>
+<li>启动Basis Server对数据总线的消费。</li>
+<li>对比新旧数据同步情况。</li>
+</ol>
+</li>
+</ul>
+<p>在基础库表列信息迁移中，BasisServer消费的消息来自于Kafka，所以可以通过Kafka保存新增消息的方式，保证增量消息不丢失，从而理论上保障新旧数据的一致性。</p>
+<ul>
+<li>资产业务元数据迁移：在基础库表列元数据迁移执行完成之后启动。<ol>
+<li>涉及到资产元数据的业务系统（如资产中心）启动双写。</li>
+<li>IDP切换使用High level api。1和2执行之后，资产元数据的增量数据就已经开始往新旧表里同时写入，此时新表里只有增量数据，没有存量数据。</li>
+<li>通过rpc接口，开始从旧版元数据系统sref迁移存量数据。由于新表中已经存在新增数据，因此迁移存量数据过程中，对于表主键已经存在的数据执行丢弃策略，这样保障了资产元数据是最新的。</li>
+<li>对于新旧数据一致性，理论上不会有一致性问题。</li>
+<li>切换度接口。</li>
+<li>双写停止，就服务下线。</li>
+</ol>
+</li>
+</ul>
+<p>除了资产中心的迁移之外，其余业务平台的迁移过程与此类似。需要注意的是对于各业务系统之间存在的调用依赖，需要梳理上线顺序。</p>
+<h2 id="未来规划">未来规划<a class="post-anchor" href="#未来规划"></a></h2><p>目前元数据系统主要管理的是Hive的元数据，未来一定会接入更多类型的数据源，比如Druid、Kafka Topic等。</p>
+<h2 id="问题">问题<a class="post-anchor" href="#问题"></a></h2><p>新版元数据总线的设计思路是一个拆分解耦的过程，各业务平台对自身设计的业务元数据进行管理。但是新方案并不是没有缺点：</p>
+<ul>
+<li>对于元数据的调用方而言，原本只需要调用一次元数据系统，现在需要分别调用多个元数据业务系统。目前是通过封装High level api的方式，减少元数据系统使用方的迁移成本。</li>
+<li>对于多条件复杂查询请求，如果是旧版的设计，则只需要在元数据系统的数据库中进行剪枝和join操作，而对于新版元数据系统，则需要在不同的业务系统中分别进行查询，并将结果聚合拼接。这样能够保证目前线上的使用场景，是一个疑问。</li>
+</ul>
+<p>“分久必合，合久必分”。</p>
+</body></html>
+
+  
+    <div class="post-reward">
+    <div id="reward-button">打赏</div>
+      <div id="qr">
+        <div class="wrap">
+            
+            <div class="bg-wrap">
+              <a href="/images/zhifubao.png" target="_block" class="bg" style="background-image:url('/images/zhifubao.png')"></a>
+              支付宝
+            </div>
+            
+            
+            <div class="bg-wrap">
+                <a href="/images/weixin.png" target="_block" class="bg" style="background-image:url('/images/weixin.png')"></a>
+              微信
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  
+  <div class="post-guide">
+    <div class="item left">
+        
+    </div>
+    <div class="item right">
+        
+          <a href="/2020/01/19/flink-distributed-runtime/">Flink分布式运行时环境</a>
+        
+    </div>
+  </div>
+
+  
+
+  <div class="post-copyright">
+    <div class="auth">
+      本文作者：<a href="http://renzehello.github.io">黑泽暗</a>
+    </div>
+    <div class="link">
+      永久链接：<a href="http://renzehello.github.io/2020/01/21/metadata-bus/">http://renzehello.github.io/2020/01/21/metadata-bus/</a>
+    </div>
+    <div class="declare">
+      版权声明：本文首发于<a href="http://renzehello.github.io">黑泽暗</a>的博客，转载请注明出处！
+    </div>
+  </div>
+
+  <div id="comment"></div>
+
+  
+  
+</article>
+        <footer>
+          <div class="copyright">
+            ©2020
+            <a href="http://renzehello.github.io">黑泽暗</a> Powered by <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> |
+            <a href="https://github.com/shixiaohu2206/hexo-theme-huhu" target="_blank" rel="noopener">hexo-theme-huhu</a>
+          </div>
+          
+        </footer>
+      </div>
+    </div>
+  </body>
+  
+</html>
+<script type="text/javascript">
+                  window.HUHU_CONFIG = JSON.parse("{\"share\":[\"weibo\",\"weixin\",\"qqkongjian\",\"QQ\",\"douban\",\"facebook\",\"twitter\",\"google\"],\"valine\":{\"API_ID\":\"lPXm1O7hgA80cbP3TJUtXnkR-gzGzoHsz\",\"API_KEY\":\"N6hTkS9wtmUqujl1MaUeCFjq\"},\"service_worker\":{\"open\":false}}")
+                </script> <script type="text/javascript">window.addEventListener('load', function() {
+    
+    window.loadJs = function(d, m, a) {
+      var c = document.getElementsByTagName('head')[0] || document.head || document.documentElement
+      var b = document.createElement('script')
+      b.defer = true
+      b.setAttribute('type', 'text/javascript')
+      b.setAttribute('charset', 'UTF-8')
+      b.setAttribute('async', 'true')
+      b.setAttribute('src', d)
+      m && b.setAttribute('data-main', '/scripts/app-built')
+      if (typeof a === 'function') {
+        if (window.attachEvent) {
+          b.onreadystatechange = function() {
+            var e = b.readyState
+            if (e === 'loaded' || e === 'complete') {
+              b.onreadystatechange = null
+              a()
+            }
+          }
+        } else {
+          b.onload = a
+        }
+      }
+      c.appendChild(b)
+    }
+    window.loadJs && window.loadJs('https://cdn.bootcss.com/require.js/2.3.6/require.min.js', true, function() {require.config({"paths":{"util":"util","share":"share","search":"search","pagemap":"pagemap.min","registerSW":"registerSW","valine":"cdn/Valine.min","av":["https://cdn.jsdelivr.net/npm/leancloud-storage/dist/av-min"],"pjax":["https://cdn.bootcss.com/jquery.pjax/2.0.1/jquery.pjax.min"],"jquery":["https://cdn.bootcss.com/jquery/3.4.1/jquery.min"],"confirm":["https://cdn.bootcss.com/jquery-confirm/3.3.4/jquery-confirm.min"],"fancybox":["https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min"],"chart":["https://cdn.bootcss.com/Chart.js/2.8.0-rc.1/Chart.bundle.min"]},"map":{"*":{"css":"https://cdn.bootcss.com/require-css/0.1.10/css.min.js"}},"shim":{"fancybox":{"deps":["css!https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css"]},"confirm":{"deps":["css!https://cdn.bootcss.com/jquery-confirm/3.3.4/jquery-confirm.min.css"]},"chart":{"deps":["css!https://cdn.bootcss.com/Chart.js/2.8.0-rc.1/Chart.min.css"]}},"waitSeconds":3})})
+  })</script> <script type="text/javascript">
+                  ;(function() {
+                    var bp = document.createElement('script')
+                    var curProtocol = window.location.protocol.split(':')[0]
+                    if (curProtocol === 'https') {
+                      bp.src = 'https://zz.bdstatic.com/linksubmit/push.js'
+                    } else {
+                      bp.src = 'http://push.zhanzhang.baidu.com/push.js'
+                    }
+                    var s = document.getElementsByTagName('script')[0]
+                    s.parentNode.insertBefore(bp, s)
+                  })()
+                </script> 
