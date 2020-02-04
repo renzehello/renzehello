@@ -29,7 +29,7 @@
     
     <div id="post-toc" class="animated hiddenToc hide">
       <span class="title">Toc</span>
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务需求与挑战"><span class="toc-text">业务需求与挑战</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-旧版元数据总线问题"><span class="toc-text">1. 旧版元数据总线问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-业务目标"><span class="toc-text">2. 业务目标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#元数据总线解决方案"><span class="toc-text">元数据总线解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-架构设计"><span class="toc-text">1. 架构设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-消息设计"><span class="toc-text">2. 消息设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-关键流程"><span class="toc-text">3. 关键流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#迁移方案"><span class="toc-text">迁移方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#未来规划"><span class="toc-text">未来规划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-text">问题</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概要"><span class="toc-text">概要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#业务需求与挑战"><span class="toc-text">业务需求与挑战</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-旧版元数据总线问题"><span class="toc-text">1. 旧版元数据总线问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-业务目标"><span class="toc-text">2. 业务目标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#元数据总线解决方案"><span class="toc-text">元数据总线解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-架构设计"><span class="toc-text">1. 架构设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-消息设计"><span class="toc-text">2. 消息设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-关键流程"><span class="toc-text">3. 关键流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#迁移方案"><span class="toc-text">迁移方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总线优势"><span class="toc-text">总线优势</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#未来规划"><span class="toc-text">未来规划</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#问题"><span class="toc-text">问题</span></a></li></ol>
     </div>
     
     <div id="fixed-menu-wrap">
@@ -299,6 +299,10 @@
 </li>
 </ul>
 <p>除了资产中心的迁移之外，其余业务平台的迁移过程与此类似。需要注意的是对于各业务系统之间存在的调用依赖，需要梳理上线顺序。</p>
+<h2 id="总线优势">总线优势<a class="post-anchor" href="#总线优势"></a></h2><ul>
+<li>SSOT单一数据源（Single source of truth），大家有兴趣可以google一下，好像是前端开发框架提出来的，总体遵循的原则：</li>
+</ul>
+<p>1.取值只读<br>2.存值通道唯一<br>3.数据订阅<br>4.存储值改变通知<br>比如我们的gitlab就是一个单一代码源，我们的元数据总线通过分域来实现SSOT（元数据分域：技术、质检、血缘、资产、安全等）。现实中SSOT是比较难的，需要顶层架构设计，但一旦建立起来各模块就可以互相独立快速发展了。</p>
 <h2 id="未来规划">未来规划<a class="post-anchor" href="#未来规划"></a></h2><p>目前元数据系统主要管理的是Hive的元数据，未来一定会接入更多类型的数据源，比如Druid、Kafka Topic等。</p>
 <h2 id="问题">问题<a class="post-anchor" href="#问题"></a></h2><p>新版元数据总线的设计思路是一个拆分解耦的过程，各业务平台对自身设计的业务元数据进行管理。但是新方案并不是没有缺点：</p>
 <ul>
