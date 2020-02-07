@@ -215,6 +215,8 @@
       </div>
     </div>
     <html><head></head><body><h2 id="Event-Time-Processing-Time-Ingestion-Time">Event Time / Processing Time / Ingestion Time<a class="post-anchor" href="#Event-Time-Processing-Time-Ingestion-Time"></a></h2><a href="/2020/02/05/event-time/times_clocks.svg" data-caption="times_clocks" data-fancybox="images"><img src="/2020/02/05/event-time/times_clocks.svg" alt="times_clocks"></a>
+<a href="/2020/02/05/event-time/times_clocks.svg" data-caption="times_clocks" data-fancybox="images"><img src="/2020/02/05/event-time/times_clocks.svg" alt="times_clocks"></a>
+<a href="/2020/02/05/event-time/times_clocks.svg" data-caption="times_clocks1" data-fancybox="images"><img src="/2020/02/05/event-time/times_clocks.svg" alt="times_clocks1"></a>
 <p>Flink支持三种时间概念：</p>
 <ul>
 <li>Event time（事件时间）</li>
@@ -249,7 +251,8 @@
 <li>根据业务选择最合适的时间<br>Hadoop的日志进入Flink的时间为2018-12-23 17:43:46,666（Ingest Time），在进入window操作时那台机器的系统时间是2018-12-23 17:43:47,120（Processing Time），日志的具体内容是：<figure class="highlight shell"><table><tbody><tr><td class="code"><pre><code class="hljs shell">（Event Time）2018-12-23 16:37:15,624 INFO<br>org.apache.hadoop.yarn.client.ConfiguredRMFailoverProxyProvider <br>- Failing over to rm2<br></code></pre></td></tr></tbody></table></figure>
 要统计每个5min内的日志error个数，哪个时间是最有意义的? 最佳选择就是<strong>event time</strong>。一般都需要使用event time，除非由于特殊情况只能用另外两种时间来代替。</li>
 </ul>
-<h2 id="事件-时间（Event-Time）处理">事件-时间（Event-Time）处理<a class="post-anchor" href="#事件-时间（Event-Time）处理"></a></h2><p>在“时间语义”中，我们解释了处理时间与事件时间的不同点。处理时间较好理解，因为它基于本地机器的时间，它产生的是有点任意的、不一致的、以及无法复现的结果。而事件时间的语义产生的是可复现的、一致性的结果，它对于很多流处理场景是一个硬性的要求。然而，相对于处理时间语义，事件时间语义应用需要额外的配置，并且引入了更多的系统内部构件。</p>
+<h2 id="事件-时间（Event-Time）处理">事件-时间（Event-Time）处理<a class="post-anchor" href="#事件-时间（Event-Time）处理"></a></h2>{% asset_img times_clocks.svg times_clocks %}
+<p>在“时间语义”中，我们解释了处理时间与事件时间的不同点。处理时间较好理解，因为它基于本地机器的时间，它产生的是有点任意的、不一致的、以及无法复现的结果。而事件时间的语义产生的是可复现的、一致性的结果，它对于很多流处理场景是一个硬性的要求。然而，相对于处理时间语义，事件时间语义应用需要额外的配置，并且引入了更多的系统内部构件。</p>
 <h3 id="时间戳（Timestamp）">时间戳（Timestamp）<a class="post-anchor" href="#时间戳（Timestamp）"></a></h3><p>所有由Flink 事件-时间流应用生成的条目都必须伴随着一个时间戳。时间戳将一个条目与一个特定的时间点关联起来，一般这个时间点表示的是这条record发生的时间。不过application可以随意选择时间戳的含义，只要流中条目的时间戳是随着流的前进而递增即可。</p>
 <h3 id="水印（Watermarks）">水印（Watermarks）<a class="post-anchor" href="#水印（Watermarks）"></a></h3>{% asset_img times_clocks.svg times_clocks %}
 <p>解决目标： <strong>out-of-order/late element  （乱序和延迟事件）</strong><br>实时系统中，由于各种原因造成的延时，造成某些消息发到flink的时间延时于事件产生的时间。如果基于event time构建window，但是对于late element，我们又不能无限期的等下去，必须要有个机制来保证一个特定的时间后，必须触发window去进行计算了。这个特别的机制，就是watermark。<br>在一个事件-时间应用中，水印用于从每个task中获取当前的事件时间。Time-based operators 使用这个时间触发计算，并取得进展。例如，一个time-window 任务在到达window的结束边界后，会触发计算并产生输出。<br>在Flink中，水印是以<strong>特殊的records</strong>实现的，这些records会持有一个Long类型的值，作为时间戳。如下图所示，水印流记录穿插在正常流记录（包含时间戳）之中：</p>
